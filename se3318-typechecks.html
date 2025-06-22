@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software Construction: Coding Standards & Checkstyle Reference Sheet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Custom styling for alternating table rows */
+        table tbody tr:nth-child(odd) {
+            background-color: #ffffff;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #f9fafb; /* Light gray for even rows */
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <header class="bg-blue-800 text-white p-6 md:p-8 rounded-b-lg shadow-lg">
+        <div class="container mx-auto max-w-7xl">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-center">
+                Software Construction: Coding Standards & Checkstyle Reference Sheet
+            </h1>
+            <p class="mt-2 text-center text-blue-200 text-lg md:text-xl">
+                Comprehensive guide to code quality rules and best practices
+            </p>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-8 lg:p-10 max-w-7xl">
+        <p class="mb-8 text-lg leading-relaxed text-gray-700">
+            This reference sheet compiles key Checkstyle rules and programming style guidelines from your course material.
+            Understanding these rules, their purpose, common violations, and correct usage is crucial for writing high-quality,
+            maintainable software and for your final exam.
+        </p>
+
+        <!-- Class-Level Checks Section -->
+        <section class="mb-12">
+            <h2 class="text-blue-700 text-2xl md:text-3xl font-bold mb-6 mt-10 border-b-2 pb-2 border-blue-200">
+                1. Class-Level Checks
+            </h2>
+            <p class="text-gray-600 mb-6">
+                These checks apply to the overall structure, naming, and dependencies of classes.
+            </p>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr class="bg-blue-600 text-white uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Rule Name</th>
+                            <th class="py-3 px-6 text-left">Where It Is Used</th>
+                            <th class="py-3 px-6 text-left">What It Checks</th>
+                            <th class="py-3 px-6 text-left">Why It Matters</th>
+                            <th class="py-3 px-6 text-left">Common Violations</th>
+                            <th class="py-3 px-6 text-left">Correct Usage Example</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">VisibilityModifier</td>
+                            <td class="py-3 px-6 text-left align-top">Class (Fields)</td>
+                            <td class="py-3 px-6 text-left align-top">Ensures proper visibility of class members. By default, fields should be `private`. Only `static final` or truly immutable fields may be `public`.</td>
+                            <td class="py-3 px-6 text-left align-top">Enforces good encapsulation; hides implementation details; reduces external dependencies.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public int num1; // non-final public field<br>protected String field2; // protected field often disallowed</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Example {<br>  private int myPrivateField;<br>  public static final int CONSTANT = 10; // OK<br>  // public final ImmutableList&lt;String&gt; items; // OK if ImmutableList is configured as immutable<br>}</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">FinalClass</td>
+                            <td class="py-3 px-6 text-left align-top">Class</td>
+                            <td class="py-3 px-6 text-left align-top">Verifies that classes not intended for inheritance are declared `final`, especially those with only private constructors.</td>
+                            <td class="py-3 px-6 text-left align-top">Prevents unintended or incorrect subclassing; clarifies design intent.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Test { private Test() {} } // Violation: Should be final</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">final class Test { private Test() {} } // OK<br>class MyClass { public MyClass() {} } // OK: Designed for instantiation/extension</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">HideUtilityClassConstructor</td>
+                            <td class="py-3 px-6 text-left align-top">Class</td>
+                            <td class="py-3 px-6 text-left align-top">Ensures that utility classes (containing only static members) have a private constructor to prevent instantiation. For extensible utilities, use `protected` ctor throwing `UnsupportedOperationException`.</td>
+                            <td class="py-3 px-6 text-left align-top">Prevents meaningless object instantiation; clarifies class role.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Utils { public Utils() {} public static void doSomething() {} } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Utils { private Utils() {} public static void doSomething() {} } // OK<br>class ExtensibleUtils { protected ExtensibleUtils() { throw new UnsupportedOperationException(); } public static void anotherMethod() {} } // OK (for extension)</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">DesignForExtension</td>
+                            <td class="py-3 px-6 text-left align-top">Class (Methods)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that overridable methods with non-empty implementations have Javadoc. Enforces providing empty "hook" methods for subclasses.</td>
+                            <td class="py-3 px-6 text-left align-top">Protects superclasses from being broken by subclasses; ensures clear API documentation.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Base { public void doSomething() { /* ... */ } } // Violation: Overridable without Javadoc</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Base { /** Method documentation. */ public void doSomething() { /* ... */ }<br>  protected void hookMethod() {} // OK: Empty hook<br>}</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">AbstractClassName</td>
+                            <td class="py-3 px-6 text-left align-top">Class</td>
+                            <td class="py-3 px-6 text-left align-top">Ensures abstract class names conform to a specified pattern (e.g., starting with "Abstract") and are declared `abstract`.</td>
+                            <td class="py-3 px-6 text-left align-top">Improves naming consistency; clarifies class hierarchy.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">abstract class MyBaseClass {} // Violation (if pattern requires "Abstract")<br>class AbstractService {} // Violation (if not abstract)</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">abstract class AbstractProcessor {} // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">ClassDataAbstractionCoupling (CDAC)</td>
+                            <td class="py-3 px-6 text-left align-top">Class</td>
+                            <td class="py-3 px-6 text-left align-top">Measures the number of unique other classes instantiated or referenced as members/local variables within a class.</td>
+                            <td class="py-3 px-6 text-left align-top">Reduces coupling; high DAC increases maintenance costs.</td>
+                            <td class="py-3 px-6 text-left align-top">A class that imports and uses instances of 10+ different custom types.</td>
+                            <td class="py-3 px-6 text-left align-top">Strive for a low DAC score (e.g., max 3-5 unique types). Refactor large classes into smaller, more focused ones.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">InterfaceIsType</td>
+                            <td class="py-3 px-6 text-left align-top">Class (Interface)</td>
+                            <td class="py-3 px-6 text-left align-top">Enforces that interfaces define methods and primarily serve as types, not just constant holders.</td>
+                            <td class="py-3 px-6 text-left align-top">Promotes proper interface usage (defining behavior, not just data).</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">interface Constants { int MAX = 10; String NAME = "App"; } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">interface Service { void perform(); int calculate(); } // OK<br>interface Marker {} // OK (if marker interfaces allowed)</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">ClassFanOutComplexity (CFO)</td>
+                            <td class="py-3 px-6 text-left align-top">Class</td>
+                            <td class="py-3 px-6 text-left align-top">Measures the number of other types (classes, records, interfaces, enums, annotations) a given class directly relies on.</td>
+                            <td class="py-3 px-6 text-left align-top">Reduces coupling; high CFO significantly increases maintenance burden.</td>
+                            <td class="py-3 px-6 text-left align-top">A class with numerous imports and direct dependencies on many different types.</td>
+                            <td class="py-3 px-6 text-left align-top">Strive for low CFO. Break down large, complex classes into smaller, more manageable components with fewer dependencies.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">AvoidStarImport</td>
+                            <td class="py-3 px-6 text-left align-top">Class (Imports)</td>
+                            <td class="py-3 px-6 text-left align-top">Prohibits the use of `import *` (wildcard imports) for packages or static members.</td>
+                            <td class="py-3 px-6 text-left align-top">Reduces coupling; prevents naming conflicts; improves clarity of class origin.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">import java.util.*;<br>import static java.lang.Math.*;</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">import java.util.ArrayList;<br>import java.util.HashMap;<br>import static java.lang.Math.PI;</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MissingCtor</td>
+                            <td class="py-3 px-6 text-left align-top">Class</td>
+                            <td class="py-3 px-6 text-left align-top">Ensures that non-abstract classes explicitly define a constructor, rather than relying solely on the implicit default no-argument constructor.</td>
+                            <td class="py-3 px-6 text-left align-top">Makes instantiation clearer; allows for specific initialization logic.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class MyClass { int value; } // Violation: No explicit constructor</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class MyClass { int value; public MyClass() { this.value = 0; } } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MethodCountCheck</td>
+                            <td class="py-3 px-6 text-left align-top">Class</td>
+                            <td class="py-3 px-6 text-left align-top">Limits the number of methods declared in each type, by access modifier or total count. (Methods in nested enums/anonymous classes are not counted).</td>
+                            <td class="py-3 px-6 text-left align-top">Helps prevent "God Objects" or classes with too many responsibilities; enforces Single Responsibility Principle.</td>
+                            <td class="py-3 px-6 text-left align-top">A class with excessively many methods (e.g., 50+ public methods).</td>
+                            <td class="py-3 px-6 text-left align-top">Classes should be focused on a single responsibility, leading to a manageable number of methods. Refactor if method count is too high.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">EmptyLineSeparator</td>
+                            <td class="py-3 px-6 text-left align-top">Class/File</td>
+                            <td class="py-3 px-6 text-left align-top">Enforces empty lines between different code blocks (e.g., package, imports, fields, constructors, methods, nested classes, initializers).</td>
+                            <td class="py-3 px-6 text-left align-top">Improves code readability and visual organization.</td>
+                            <td class="py-3 px-6 text-left align-top">No empty lines separating imports from fields, or fields from constructors.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">package com.example;<br><br>import java.util.List;<br><br>public class MyClass {<br>  private int count; // Fields<br><br>  public MyClass() { // Constructor<br>    this.count = 0;<br>  }<br><br>  public void doSomething() { // Method<br>    // ...<br>  }<br>}</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">JavaNCSS</td>
+                            <td class="py-3 px-6 text-left align-top">Class/File</td>
+                            <td class="py-3 px-6 text-left align-top">Counts non-commenting source statements (NCSS) for methods, classes, and files.</td>
+                            <td class="py-3 px-6 text-left align-top">Measures code complexity; high NCSS indicates a need for refactoring.</td>
+                            <td class="py-3 px-6 text-left align-top">Very large files or classes with thousands of lines of code.</td>
+                            <td class="py-3 px-6 text-left align-top">Break down large files and classes into smaller, more manageable units. Keep methods concise.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Method-Level Checks Section -->
+        <section class="mb-12">
+            <h2 class="text-blue-700 text-2xl md:text-3xl font-bold mb-6 mt-10 border-b-2 pb-2 border-blue-200">
+                2. Method-Level Checks
+            </h2>
+            <p class="text-gray-600 mb-6">
+                These checks focus on the design, naming, parameters, and internal structure of individual methods.
+            </p>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr class="bg-blue-600 text-white uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Rule Name</th>
+                            <th class="py-3 px-6 text-left">Where It Is Used</th>
+                            <th class="py-3 px-6 text-left">What It Checks</th>
+                            <th class="py-3 px-6 text-left">Why It Matters</th>
+                            <th class="py-3 px-6 text-left">Common Violations</th>
+                            <th class="py-3 px-6 text-left">Correct Usage Example</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MissingOverride</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Verifies that the `@Override` annotation is present when the `@inheritDoc` Javadoc tag is used, or when a method intends to override a superclass method.</td>
+                            <td class="py-3 px-6 text-left align-top">Clearly indicates overriding intent; helps catch accidental overloading instead of overriding.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Sub extends Super { /** @inheritDoc */ public void doIt() {} } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Sub extends Super { @Override /** @inheritDoc */ public void doIt() {} } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">OverloadedMethodsDeclarationOrder</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that overloaded methods (same name, different parameters) are grouped together in the class declaration.</td>
+                            <td class="py-3 px-6 text-left align-top">Improves code readability and maintainability; easier to find related methods.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void foo(int i) {} public void bar() {} public void foo(String s) {} // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void foo(int i) {} public void foo(String s) {} public void bar() {} // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MethodName</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Enforces naming conventions for methods (e.g., camel case, starting with a lowercase letter, strong verb followed by object, describes all side effects and return values).</td>
+                            <td class="py-3 px-6 text-left align-top">Improves readability, consistency, and clarity of intent.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void DoSomething() {} // Violation<br>public void handle() {} // Violation: Meaningless verb</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void calculateTotalAmount() {} // OK<br>public boolean isValidated() {} // OK<br>public Document printDocument() {} // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MethodLength</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Limits the maximum number of lines in a method. (Can be configured to count comments/empty lines or only code lines).</td>
+                            <td class="py-3 px-6 text-left align-top">Promotes shorter, more focused routines; improves readability, testability, and reduces complexity.</td>
+                            <td class="py-3 px-6 text-left align-top">A method spanning hundreds of lines.</td>
+                            <td class="py-3 px-6 text-left align-top">Extract long methods into smaller, functionally cohesive routines. Aim for methods that fit on a single screen.</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MethodParamPad</td>
+                            <td class="py-3 px-6 text-left align-top">Method (Parameters)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks the spacing between the method identifier and the opening parenthesis `(`.</td>
+                            <td class="py-3 px-6 text-left align-top">Enforces consistent code formatting and readability.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void myMethod () {} // Violation<br>public void anotherMethod( ) {} // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void myMethod() {} // OK<br>public void anotherMethod(int param) {} // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MethodTypeParameterName</td>
+                            <td class="py-3 px-6 text-left align-top">Method (Generics)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that method type parameter names (for generics) conform to a specified pattern (usually single uppercase letters, e.g., `T`, `K`, `V`).</td>
+                            <td class="py-3 px-6 text-left align-top">Ensures consistency and readability for generic code.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public &lt;type&gt; void process(type item) {} // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public &lt;T&gt; void process(T item) {} // OK<br>public &lt;K, V&gt; Map&lt;K, V&gt; createMap() {} // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">FinalParameters</td>
+                            <td class="py-3 px-6 text-left align-top">Method (Parameters)</td>
+                            <td class="py-3 px-6 text-left align-top">Requires method parameters to be declared as `final`.</td>
+                            <td class="py-3 px-6 text-left align-top">Prevents accidental modification of parameters; makes code clearer (parameter values won't change).</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void update(int value) { value++; } // Violation (if value not final)</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void update(final int value) { /* value cannot be modified */ } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">ParameterName</td>
+                            <td class="py-3 px-6 text-left align-top">Method (Parameters)</td>
+                            <td class="py-3 px-6 text-left align-top">Enforces naming conventions for method parameters (e.g., camel case, starting with lowercase).</td>
+                            <td class="py-3 px-6 text-left align-top">Improves readability and consistency.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void process(int MyParam) {} // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public void process(int myParam) {} // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">ParameterNumber</td>
+                            <td class="py-3 px-6 text-left align-top">Method (Parameters)</td>
+                            <td class="py-3 px-6 text-left align-top">Limits the number of parameters a method or constructor can have.</td>
+                            <td class="py-3 px-6 text-left align-top">Encourages simpler interfaces; reduces method complexity; indicates potential need for refactoring.</td>
+                            <td class="py-3 px-6 text-left align-top">A method with 8 or more parameters.</td>
+                            <td class="py-3 px-6 text-left align-top">Refactor methods with too many parameters by grouping related parameters into a new object (Parameter Object pattern).</td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">RequireThis</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that references to instance variables and methods of the current object explicitly use `this.`.</td>
+                            <td class="py-3 px-6 text-left align-top">Avoids ambiguity when local variables or parameters have the same name as instance members.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class MyClass { int count; void increment() { count++; } } // Violation (if requireThis is true)</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class MyClass { int count; void increment() { this.count++; } } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">ReturnCount</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Restricts the number of `return` statements in methods, constructors, and lambda expressions.</td>
+                            <td class="py-3 px-6 text-left align-top">Promotes clearer control flow; reduces complexity by having fewer exit points.</td>
+                            <td class="py-3 px-6 text-left align-top">A method with many `return` statements scattered throughout its logic.</td>
+                            <td class="py-3 px-6 text-left align-top">Limit returns to one or a few clearly defined exit points. Use `if/else` logic to consolidate return values.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Variable-Level Checks Section -->
+        <section class="mb-12">
+            <h2 class="text-blue-700 text-2xl md:text-3xl font-bold mb-6 mt-10 border-b-2 pb-2 border-blue-200">
+                3. Variable-Level Checks
+            </h2>
+            <p class="text-gray-600 mb-6">
+                These checks focus on the declaration, naming, initialization, and usage of variables.
+            </p>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr class="bg-blue-600 text-white uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Rule Name</th>
+                            <th class="py-3 px-6 text-left">Where It Is Used</th>
+                            <th class="py-3 px-6 text-left">What It Checks</th>
+                            <th class="py-3 px-6 text-left">Why It Matters</th>
+                            <th class="py-3 px-6 text-left">Common Violations</th>
+                            <th class="py-3 px-6 text-left">Correct Usage Example</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MemberName</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Instance)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that instance variable names conform to a specified pattern (e.g., camel case, starting with lowercase, not all uppercase).</td>
+                            <td class="py-3 px-6 text-left align-top">Improves readability and consistency across the codebase.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public int NUM1; // Violation<br>private int Bad_Name; // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public int totalCount; // OK<br>protected String customerName; // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">LocalVariableName</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Local)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that local, non-final variable names conform to a specified pattern (e.g., camel case, starting with lowercase). Catch parameters are considered local variables.</td>
+                            <td class="py-3 px-6 text-left align-top">Improves readability and consistency for local scope.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">void myMethod() { int VAR = 10; } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">void myMethod() { int counter = 0; } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">StaticVariableName</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Static)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that static, non-final variable names conform to a specified pattern (e.g., camel case, starting with lowercase).</td>
+                            <td class="py-3 px-6 text-left align-top">Improves readability and consistency for static members.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public static int ItStatic1 = 2; // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">public static int currentUsers = 0; // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">LocalFinalVariableName</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Local Final)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that local `final` variable names conform to a specified pattern (e.g., camel case, starting with lowercase). Catch parameters and resources in `try` statements are considered local final variables.</td>
+                            <td class="py-3 px-6 text-left align-top">Improves readability and consistency.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">final int VAR1 = 5; // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">final int maxAttempts = 3; // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">FinalLocalVariable</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Local)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that local variables whose values are never changed are declared `final`. (Can also check unchanged parameters).</td>
+                            <td class="py-3 px-6 text-left align-top">Enforces immutability; prevents accidental modification; improves code clarity.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">void foo() { int result = 0; result = 1 + 2; } // Violation (if result is never changed after first assignment)</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">void foo() { final int result = 1 + 2; } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MultipleVariableDeclarations</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Declaration)</td>
+                            <td class="py-3 px-6 text-left align-top">Enforces that each variable declaration is in its own statement and on its own line.</td>
+                            <td class="py-3 px-6 text-left align-top">Improves readability and clarity of declarations.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">int lower, higher; // Violation<br>int value, index; // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">int lower;<br>int higher;</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">ExplicitInitialization</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Initialization)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks if variables are explicitly initialized to their default values (e.g., `0` for int, `null` for objects, `false` for boolean).</td>
+                            <td class="py-3 px-6 text-left align-top">Avoids redundant code, as Java automatically initializes variables to defaults.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">private int intField1 = 0; // Violation<br>private Obj objField1 = null; // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">private int intField3; // OK (relies on default init)<br>private int intField2 = 1; // OK (non-default init)</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">VariableDeclarationUsageDistance</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Usage)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks the distance (number of statements) between a variable's declaration and its first usage.</td>
+                            <td class="py-3 px-6 text-left align-top">Reduces variable "live time"; improves readability by keeping related code together.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">int num; // declared<br>System.out.println("S1");<br>System.out.println("S2");<br>num = 1; // first use (large distance)</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">int num = 1; // declared and used immediately</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">UnusedLocalVariable</td>
+                            <td class="py-3 px-6 text-left align-top">Variable (Local)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that a local variable is declared and/or assigned, but never used.</td>
+                            <td class="py-3 px-6 text-left align-top">Promotes cleaner code; avoids dead code and potential errors from unused variables.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">void method() { int temp = 10; } // Violation: temp is unused</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">Remove unused variables. If the variable is truly needed later, ensure it's referenced.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Loop/Control-Flow-Specific Checks Section -->
+        <section class="mb-12">
+            <h2 class="text-blue-700 text-2xl md:text-3xl font-bold mb-6 mt-10 border-b-2 pb-2 border-blue-200">
+                4. Loop/Control-Flow-Specific Checks
+            </h2>
+            <p class="text-gray-600 mb-6">
+                These checks ensure proper and predictable behavior of loops and conditional structures.
+            </p>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr class="bg-blue-600 text-white uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Rule Name</th>
+                            <th class="py-3 px-6 text-left">Where It Is Used</th>
+                            <th class="py-3 px-6 text-left">What It Checks</th>
+                            <th class="py-3 px-6 text-left">Why It Matters</th>
+                            <th class="py-3 px-6 text-left">Common Violations</th>
+                            <th class="py-3 px-6 text-left">Correct Usage Example</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">ModifiedControlVariable</td>
+                            <td class="py-3 px-6 text-left align-top">Loop (`for`)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that the control variable of a `for` loop is not modified inside the loop block.</td>
+                            <td class="py-3 px-6 text-left align-top">Prevents unpredictable loop behavior and hard-to-debug logic errors.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">for (int i = 0; i &lt; 10; i++) { i++; } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">for (int i = 0; i &lt; 10; i++) { /* Use i, but don't change it */ } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">MissingSwitchDefault</td>
+                            <td class="py-3 px-6 text-left align-top">Control Flow (`switch`)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that a `switch` statement has a `default` clause.</td>
+                            <td class="py-3 px-6 text-left align-top">Ensures all cases are handled (even unexpected ones); improves robustness and documentation.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">switch (value) { case 1: break; } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">switch (value) { case 1: break; default: handleUnknown(); break; } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">FallsThrough</td>
+                            <td class="py-3 px-6 text-left align-top">Control Flow (`switch`)</td>
+                            <td class="py-3 px-6 text-left align-top">Checks for fall-through in `switch` statements where a `case` block contains code but lacks an explicit exit (e.g., `break`, `return`, `throw`).</td>
+                            <td class="py-3 px-6 text-left align-top">Prevents unintentional bugs due to fall-through; enforces clear control flow.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">switch (i) { case 1: i++; case 2: i++; break; } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">switch (i) { case 1: i++; // falls through, necessary to increase i by one. case 2: i++; break; } // OK (with comment)</code></pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Java-Specific Checks Section -->
+        <section class="mb-12">
+            <h2 class="text-blue-700 text-2xl md:text-3xl font-bold mb-6 mt-10 border-b-2 pb-2 border-blue-200">
+                5. Java-Specific Checks
+            </h2>
+            <p class="text-gray-600 mb-6">
+                These checks enforce Java-specific idioms and best practices related to core language features.
+            </p>
+            <div class="overflow-x-auto rounded-lg shadow-md">
+                <table class="w-full table-auto border-collapse">
+                    <thead>
+                        <tr class="bg-blue-600 text-white uppercase text-sm leading-normal">
+                            <th class="py-3 px-6 text-left">Rule Name</th>
+                            <th class="py-3 px-6 text-left">Where It Is Used</th>
+                            <th class="py-3 px-6 text-left">What It Checks</th>
+                            <th class="py-3 px-6 text-left">Why It Matters</th>
+                            <th class="py-3 px-6 text-left">Common Violations</th>
+                            <th class="py-3 px-6 text-left">Correct Usage Example</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-gray-700 text-sm">
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">CovariantEquals</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that if a class defines an `equals()` method with a covariant parameter type (e.g., `equals(MyClass other)`), it *also* overrides the standard `equals(Object obj)`.</td>
+                            <td class="py-3 px-6 text-left align-top">Prevents subtle bugs due to method overloading instead of overriding when `equals()` is used polymorphically.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Test { public boolean equals(Test i) { return false; } } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Test { public boolean equals(Test i) { return false; } public boolean equals(Object i) { return false; } } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">SuperClone</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Ensures that an overriding `clone()` method invokes `super.clone()`.</td>
+                            <td class="py-3 px-6 text-left align-top">Essential for proper object cloning in an inheritance hierarchy to correctly copy superclass state.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Sub extends Super { public Object clone() { return new Sub(); } } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class Sub extends Super { @Override public Object clone() throws CloneNotSupportedException { return super.clone(); } } // OK</code></pre>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="py-3 px-6 text-left align-top font-semibold">SuperFinalize</td>
+                            <td class="py-3 px-6 text-left align-top">Method</td>
+                            <td class="py-3 px-6 text-left align-top">Checks that an overriding `finalize()` method invokes `super.finalize()`. (Note: `finalize()` is generally discouraged in modern Java; prefer `try-with-resources` or explicit cleanup).</td>
+                            <td class="py-3 px-6 text-left align-top">Ensures proper resource cleanup in the inheritance chain.</td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class B { protected void finalize() { System.out.println("cleanup"); } } // Violation</code></pre>
+                            </td>
+                            <td class="py-3 px-6 text-left align-top">
+                                <pre><code class="bg-gray-100 p-2 rounded text-xs font-mono block overflow-x-auto">class A { @Override protected void finalize() throws Throwable { System.out.println("In finalize block"); super.finalize(); } } // OK</code></pre>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
+
