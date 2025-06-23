@@ -14,9 +14,12 @@ import {
   SparklesIcon,
   AcademicCapIcon,
   ClockIcon,
-  XCircleIcon,
   QuestionMarkCircleIcon,
-  PhotoIcon
+  PhotoIcon,
+  RocketLaunchIcon,
+  CodeBracketIcon,
+  EyeSlashIcon,
+  EyeIcon
 } from '@heroicons/react/24/outline';
 
 // Type definitions
@@ -61,77 +64,138 @@ interface WeekContent {
 }
 
 // A dedicated component for rendering code blocks
-const CodeBlock = ({ title, code, language, type = 'neutral' }: { title: string, code: string[], language: string, type?: 'good' | 'bad' | 'neutral' }) => {
-  const baseClasses = 'rounded-xl p-4 border my-4';
-  const titleBaseClasses = 'font-semibold mb-2 flex items-center';
-  const preClasses = 'text-sm whitespace-pre-wrap font-mono';
-
-  let style = {
-    bgColor: 'bg-slate-50 border-slate-200',
-    textColor: 'text-slate-800',
-    titleColor: 'text-slate-700',
-    Icon: LightBulbIcon
+const CodeBlock = ({ title, code, type = 'neutral' }: { title: string, code: string[], type?: 'good' | 'bad' | 'neutral' }) => {
+  const [isCollapsed, setIsCollapsed] = useState(true);
+  
+  const getColorClasses = () => {
+    switch (type) {
+      case 'good':
+        return {
+          bg: 'bg-emerald-50',
+          border: 'border-emerald-200',
+          text: 'text-emerald-800',
+          icon: 'text-emerald-600'
+        };
+      case 'bad':
+        return {
+          bg: 'bg-red-50',
+          border: 'border-red-200',
+          text: 'text-red-800',
+          icon: 'text-red-600'
+        };
+      default:
+        return {
+          bg: 'bg-slate-50',
+          border: 'border-slate-200',
+          text: 'text-slate-800',
+          icon: 'text-slate-600'
+        };
+    }
   };
 
-  if (type === 'good') {
-    style = {
-      bgColor: 'bg-emerald-50 border-emerald-200',
-      textColor: 'text-emerald-800',
-      titleColor: 'text-emerald-700',
-      Icon: CheckCircleIcon
-    };
-  } else if (type === 'bad') {
-    style = {
-      bgColor: 'bg-red-50 border-red-200',
-      textColor: 'text-red-800',
-      titleColor: 'text-red-700',
-      Icon: XCircleIcon
-    };
-  }
+  const colors = getColorClasses();
 
   return (
-    <div className={`${baseClasses} ${style.bgColor}`}>
-      <h5 className={`${titleBaseClasses} ${style.titleColor}`}>
-        <style.Icon className="h-5 w-5 mr-2 flex-shrink-0" />
-        {title} <span className="ml-2 text-xs uppercase opacity-60">({language})</span>
-      </h5>
-      <pre className={preClasses}><code className={style.textColor}>{code.join('\n')}</code></pre>
+    <div className={`${colors.bg} ${colors.border} border rounded-xl p-3 sm:p-4 my-4 sm:my-6`}>
+      <button
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        className="w-full flex items-center justify-between text-left"
+      >
+        <div className="flex items-center">
+          <CodeBracketIcon className={`h-4 w-4 sm:h-5 sm:w-5 ${colors.icon} mr-2 sm:mr-3`} />
+          <span className={`font-semibold ${colors.text} text-sm sm:text-base`}>{title}</span>
+        </div>
+        {isCollapsed ? (
+          <ChevronRightIcon className={`h-4 w-4 sm:h-5 sm:w-5 ${colors.text}`} />
+        ) : (
+          <ChevronDownIcon className={`h-4 w-4 sm:h-5 sm:w-5 ${colors.text}`} />
+        )}
+      </button>
+      
+      {!isCollapsed && (
+        <div className="mt-2 sm:mt-3">
+          <pre className={`${colors.text} text-xs sm:text-sm font-mono whitespace-pre-wrap overflow-x-auto`}>
+            {code.join('\n')}
+          </pre>
+        </div>
+      )}
     </div>
   );
 };
 
 // Component for Pop Quizzes
 const PopQuizBlock = ({ question, answer, imageDescription, answerImageDescription }: { question: string, answer: string, imageDescription?: string, answerImageDescription?: string }) => {
+  const [showAnswer, setShowAnswer] = useState(false);
+
   return (
-    <div className="rounded-xl p-4 border my-4 bg-yellow-50 border-yellow-200">
-      <h5 className="font-semibold mb-2 flex items-center text-yellow-800">
-        <QuestionMarkCircleIcon className="h-5 w-5 mr-2 flex-shrink-0" />
-        Pop Quiz
-      </h5>
-      <div className="pl-7">
-        <p className="font-semibold text-slate-800 mb-2">{question}</p>
-        {imageDescription && <ImageDescriptionBlock description={imageDescription} />}
-        <div className="mt-3 pt-3 border-t border-yellow-300">
-          <p className="font-semibold text-emerald-800">Answer:</p>
-          <p className="text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: answer }}></p>
-          {answerImageDescription && <ImageDescriptionBlock description={answerImageDescription} />}
-        </div>
+    <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-4 sm:p-6 my-4 sm:my-6">
+      <div className="flex items-center mb-3 sm:mb-4">
+        <QuestionMarkCircleIcon className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600 mr-2 sm:mr-3" />
+        <h4 className="text-base sm:text-lg font-semibold text-yellow-800">Pop Quiz</h4>
       </div>
+      
+      <p className="text-slate-700 mb-3 sm:mb-4 text-sm sm:text-base font-medium">{question}</p>
+      
+      {imageDescription && (
+        <div className="bg-white/60 border border-yellow-200 rounded-lg p-3 mb-3 sm:mb-4">
+          <div className="flex items-center mb-2">
+            <PhotoIcon className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 mr-2" />
+            <span className="text-xs sm:text-sm font-medium text-slate-600">Visual Reference</span>
+          </div>
+          <p className="text-slate-700 text-xs sm:text-sm italic">{imageDescription}</p>
+        </div>
+      )}
+      
+      <button
+        onClick={() => setShowAnswer(!showAnswer)}
+        className="inline-flex items-center px-3 sm:px-4 py-1 sm:py-2 bg-yellow-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-yellow-700 transition-colors duration-200"
+      >
+        {showAnswer ? (
+          <>
+            <EyeSlashIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            Hide Answer
+          </>
+        ) : (
+          <>
+            <EyeIcon className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            Show Answer
+          </>
+        )}
+      </button>
+      
+      {showAnswer && (
+        <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-white/80 border border-emerald-200 rounded-lg">
+          <div className="flex items-center mb-2">
+            <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 mr-2" />
+            <span className="text-sm sm:text-base font-medium text-emerald-800">Answer</span>
+          </div>
+          <p className="text-slate-700 text-sm sm:text-base">{answer}</p>
+          
+          {answerImageDescription && (
+            <div className="mt-3 bg-emerald-50 border border-emerald-200 rounded-lg p-3">
+              <div className="flex items-center mb-2">
+                <PhotoIcon className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-600 mr-2" />
+                <span className="text-xs sm:text-sm font-medium text-emerald-700">Answer Visual</span>
+              </div>
+              <p className="text-emerald-700 text-xs sm:text-sm italic">{answerImageDescription}</p>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
 
 // Component for Image/Diagram Descriptions
-const ImageDescriptionBlock = ({ description }: { description: string }) => {
-  return (
-    <div className="rounded-lg p-3 my-2 bg-slate-100 border border-slate-200 text-slate-600 italic text-sm">
-      <div className="flex items-start">
-        <PhotoIcon className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
-        <div><strong>Diagram Description:</strong> {description}</div>
-      </div>
+const ImageDescriptionBlock = ({ description }: { description: string }) => (
+  <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 sm:p-4 my-3 sm:my-4">
+    <div className="flex items-center mb-2 sm:mb-3">
+      <PhotoIcon className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 mr-2" />
+      <span className="text-sm sm:text-base font-medium text-slate-600">Visual Reference</span>
     </div>
-  );
-};
+    <p className="text-slate-700 text-sm sm:text-base italic leading-relaxed">{description}</p>
+  </div>
+);
 
 
 export default function StudyNotes() {
@@ -1155,28 +1219,35 @@ export default function StudyNotes() {
         <div className="absolute inset-0 bg-mesh"></div>
         <div className="relative glass-card border-0 rounded-none">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between py-8">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-6 sm:py-8 space-y-4 sm:space-y-0">
+              <div className="flex items-center space-x-3 sm:space-x-4 order-2 sm:order-1">
                 <Link
                   href="/"
-                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center text-sm sm:text-base"
                 >
-                  <ArrowLeftIcon className="h-5 w-5 mr-2" />
+                  <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                   Back to Hub
                 </Link>
+                <Link
+                  href="/quick-reference"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center text-sm sm:text-base"
+                >
+                  <RocketLaunchIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                  Quick Reference
+                </Link>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3 sm:space-x-4 order-1 sm:order-2">
                 <div className="floating-element">
-                  <BookOpenIcon className="h-10 w-10 text-indigo-600" />
+                  <BookOpenIcon className="h-8 w-8 sm:h-10 sm:w-10 text-indigo-600" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold gradient-text">Study Notes</h1>
-                  <p className="text-lg text-slate-600">SE3318: Software Construction</p>
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Study Notes</h1>
+                  <p className="text-sm sm:text-base lg:text-lg text-slate-600">SE3318: Software Construction</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="glass-card px-3 py-1 rounded-full">
-                  <span className="text-sm font-medium text-indigo-600">Weeks 9-14</span>
+              <div className="flex items-center space-x-2 order-3">
+                <div className="glass-card px-2 sm:px-3 py-1 rounded-full">
+                  <span className="text-xs sm:text-sm font-medium text-indigo-600">Weeks 9-14</span>
                 </div>
               </div>
             </div>
@@ -1186,12 +1257,12 @@ export default function StudyNotes() {
 
       {/* Quick Navigation */}
       <div className="sticky top-0 z-40 glass-card border-0 border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <h2 className="text-lg font-semibold text-slate-800 mb-3 flex items-center">
-            <SparklesIcon className="h-5 w-5 mr-2 text-indigo-500" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <h2 className="text-base sm:text-lg font-semibold text-slate-800 mb-2 sm:mb-3 flex items-center">
+            <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-indigo-500" />
             Quick Navigation
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-1 sm:gap-2">
             {weeklyContent.map((week) => (
               <button
                 key={week.id}
@@ -1202,7 +1273,7 @@ export default function StudyNotes() {
                     toggleSection(week.id);
                   }
                 }}
-                className="px-4 py-2 text-sm font-medium bg-white/60 hover:bg-white/80 text-slate-700 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
+                className="px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm font-medium bg-white/60 hover:bg-white/80 text-slate-700 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
               >
                 {week.title}
               </button>
@@ -1212,58 +1283,58 @@ export default function StudyNotes() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="space-y-6 sm:space-y-8">
           {weeklyContent.map((week) => (
             <div key={week.id} id={week.id} className="study-card scroll-mt-24">
-              <div className="p-8 border-b border-slate-200/60">
+              <div className="p-6 sm:p-8 border-b border-slate-200/60">
                 <button
                   onClick={() => toggleSection(week.id)}
                   className="w-full flex items-center justify-between group"
                 >
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${week.color} p-3 group-hover:scale-110 transition-transform duration-300`}>
+                  <div className="flex items-center space-x-3 sm:space-x-4">
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-r ${week.color} p-2 sm:p-3 group-hover:scale-110 transition-transform duration-300`}>
                       <AcademicCapIcon className="w-full h-full text-white" />
                     </div>
-                    <h2 className="text-3xl font-bold text-slate-800">{week.title}</h2>
+                    <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">{week.title}</h2>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <div className="glass-card px-3 py-1 rounded-full">
-                      <ClockIcon className="h-4 w-4 text-slate-500 inline mr-1" />
-                      <span className="text-sm text-slate-600">{week.sections.length} topics</span>
+                    <div className="glass-card px-2 sm:px-3 py-1 rounded-full">
+                      <ClockIcon className="h-3 w-3 sm:h-4 sm:w-4 text-slate-500 inline mr-1" />
+                      <span className="text-xs sm:text-sm text-slate-600">{week.sections.length} topics</span>
                     </div>
                     {expandedSections.includes(week.id) ? (
-                      <ChevronDownIcon className="h-6 w-6 text-slate-500 transition-transform duration-200" />
+                      <ChevronDownIcon className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500 transition-transform duration-200" />
                     ) : (
-                      <ChevronRightIcon className="h-6 w-6 text-slate-500 transition-transform duration-200" />
+                      <ChevronRightIcon className="h-5 w-5 sm:h-6 sm:w-6 text-slate-500 transition-transform duration-200" />
                     )}
                   </div>
                 </button>
               </div>
 
               {expandedSections.includes(week.id) && (
-                <div className="p-8">
-                  <div className="space-y-8">
+                <div className="p-6 sm:p-8">
+                  <div className="space-y-6 sm:space-y-8">
                     {week.sections.map((section, sectionIndex) => (
                       <div key={sectionIndex} className={`study-section bg-gradient-to-br ${week.bgColor} border-white/40`}>
-                        <h3 className={`text-2xl font-bold mb-6 flex items-center ${week.textColor}`}>
-                          <DocumentTextIcon className="h-7 w-7 mr-3" />
+                        <h3 className={`text-xl sm:text-2xl font-bold mb-4 sm:mb-6 flex items-center ${week.textColor}`}>
+                          <DocumentTextIcon className="h-6 w-6 sm:h-7 sm:w-7 mr-2 sm:mr-3" />
                           {section.title}
                         </h3>
                         
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                           {section.content.map((contentBlock, contentIndex) => (
                             <div key={contentIndex}>
-                              <h4 className={`text-xl font-semibold mb-4 flex items-center ${week.textColor}`}>
-                                <LightBulbIcon className="h-6 w-6 mr-3" />
+                              <h4 className={`text-lg sm:text-xl font-semibold mb-3 sm:mb-4 flex items-center ${week.textColor}`}>
+                                <LightBulbIcon className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
                                 {contentBlock.subtitle}
                               </h4>
                               {contentBlock.items && (
-                                <ul className="space-y-3">
+                                <ul className="space-y-2 sm:space-y-3">
                                   {contentBlock.items.map((item, itemIndex) => (
                                     <li key={itemIndex} className="flex items-start group">
-                                      <CheckCircleIcon className="h-5 w-5 mr-4 mt-1 text-emerald-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                                      <span className="text-slate-700 leading-relaxed">{item}</span>
+                                      <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-3 sm:mr-4 mt-1 text-emerald-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                                      <span className="text-slate-700 leading-relaxed text-sm sm:text-base">{item}</span>
                                     </li>
                                   ))}
                                 </ul>
@@ -1272,7 +1343,7 @@ export default function StudyNotes() {
                                 <ImageDescriptionBlock key={descIndex} description={desc.description} />
                               ))}
                               {contentBlock.codeExamples && contentBlock.codeExamples.map((ex: CodeExample, exIndex: number) => (
-                                <CodeBlock key={exIndex} title={ex.title} code={ex.code} language={ex.language} type={ex.type as 'good' | 'bad' | 'neutral'} />
+                                <CodeBlock key={exIndex} title={ex.title} code={ex.code} type={ex.type as 'good' | 'bad' | 'neutral'} />
                               ))}
                               {contentBlock.popQuizzes && contentBlock.popQuizzes.map((quiz: PopQuiz, quizIndex: number) => (
                                 <PopQuizBlock key={quizIndex} question={quiz.question} answer={quiz.answer} imageDescription={quiz.imageDescription} answerImageDescription={quiz.answerImageDescription} />
@@ -1290,57 +1361,57 @@ export default function StudyNotes() {
         </div>
 
         {/* Study Tips */}
-        <div className="mt-16 study-section bg-gradient-to-br from-indigo-50/80 to-purple-50/80 border-indigo-200/40">
-          <div className="flex items-center mb-8">
-            <ExclamationTriangleIcon className="h-10 w-10 text-indigo-600 mr-4" />
-            <h2 className="text-3xl font-bold text-indigo-900">Study Tips for Final Exam Success</h2>
+        <div className="mt-12 sm:mt-16 study-section bg-gradient-to-br from-indigo-50/80 to-purple-50/80 border-indigo-200/40">
+          <div className="flex items-center mb-6 sm:mb-8">
+            <ExclamationTriangleIcon className="h-8 w-8 sm:h-10 sm:w-10 text-indigo-600 mr-3 sm:mr-4" />
+            <h2 className="text-2xl sm:text-3xl font-bold text-indigo-900">Study Tips for Final Exam Success</h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-indigo-800 flex items-center">
-                <SparklesIcon className="h-6 w-6 mr-2" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-lg sm:text-xl font-semibold text-indigo-800 flex items-center">
+                <SparklesIcon className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
                 Focus Areas
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2 sm:space-y-3">
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Understand WHY each Checkstyle rule exists (readability, maintainability, preventing errors).</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base">Understand WHY each Checkstyle rule exists (readability, maintainability, preventing errors).</span>
                 </li>
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Know common violations and correct usage examples for key rules.</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base">Know common violations and correct usage examples for key rules.</span>
                 </li>
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Master the principles: LSP, Law of Demeter, Cohesion types.</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base">Master the principles: LSP, Law of Demeter, Cohesion types.</span>
                 </li>
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Understand defensive programming concepts: Assertions vs. Exceptions.</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base">Understand defensive programming concepts: Assertions vs. Exceptions.</span>
                 </li>
               </ul>
             </div>
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-indigo-800 flex items-center">
-                <AcademicCapIcon className="h-6 w-6 mr-2" />
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-lg sm:text-xl font-semibold text-indigo-800 flex items-center">
+                <AcademicCapIcon className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
                 Key Concepts
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2 sm:space-y-3">
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Method naming: Strong verb + object, describe return value and side effects.</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base">Method naming: Strong verb + object, describe return value and side effects.</span>
                 </li>
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Variable scope: Keep &quot;live time&quot; short, declare close to first use.</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base">Variable scope: Keep &quot;live time&quot; short, declare close to first use.</span>
                 </li>
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Loop control: Don&apos;t modify control variables, watch for off-by-one errors.</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base">Loop control: Don&apos;t modify control variables, watch for off-by-one errors.</span>
                 </li>
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Table-driven methods: Know the trade-offs of Direct vs. Indexed vs. Stair-step access.</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-indigo-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base">Table-driven methods: Know the trade-offs of Direct vs. Indexed vs. Stair-step access.</span>
                 </li>
               </ul>
             </div>
@@ -1349,13 +1420,13 @@ export default function StudyNotes() {
       </main>
 
       {/* Footer */}
-      <footer className="glass-card border-0 border-t border-white/20 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <footer className="glass-card border-0 border-t border-white/20 mt-16 sm:mt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="text-center">
-            <p className="text-slate-600 text-lg">
+            <p className="text-slate-600 text-base sm:text-lg">
               SE3318: Software Construction - Study Notes (Weeks 9-14)
             </p>
-            <p className="text-slate-500 mt-2">
+            <p className="text-slate-500 mt-2 text-sm sm:text-base">
               Review regularly and practice with code examples! 📚✨
             </p>
           </div>

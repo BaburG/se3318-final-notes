@@ -524,35 +524,35 @@ export default function CheckstyleQuiz() {
         <div className="absolute inset-0 bg-mesh"></div>
         <div className="relative glass-card border-0 rounded-none">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between py-8">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-6 sm:py-8 space-y-4 sm:space-y-0">
+              <div className="flex items-center space-x-3 sm:space-x-4 order-2 sm:order-1">
                 <Link
                   href="/"
-                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center text-sm sm:text-base"
                 >
-                  <ArrowLeftIcon className="h-5 w-5 mr-2" />
+                  <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                   Back to Hub
                 </Link>
                 <Link
                   href="/checkstyle"
-                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center text-sm sm:text-base"
                 >
                   Reference Guide
                 </Link>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3 sm:space-x-4 order-1 sm:order-2">
                 <div className="floating-element">
-                  <BeakerIcon className="h-10 w-10 text-indigo-600" />
+                  <BeakerIcon className="h-8 w-8 sm:h-10 sm:w-10 text-indigo-600" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold gradient-text">Checkstyle Quiz</h1>
-                  <p className="text-lg text-slate-600">Test your knowledge of Checkstyle rules</p>
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Checkstyle Quiz</h1>
+                  <p className="text-sm sm:text-base lg:text-lg text-slate-600">Test your knowledge of Checkstyle rules</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 order-3">
                 {gameStarted && (
-                  <div className="glass-card px-4 py-2 rounded-full">
-                    <span className={`text-sm font-medium ${getScoreColor()}`}>
+                  <div className="glass-card px-3 sm:px-4 py-1 sm:py-2 rounded-full">
+                    <span className={`text-xs sm:text-sm font-medium ${getScoreColor()}`}>
                       Score: {score.correct}/{score.total}
                     </span>
                   </div>
@@ -563,24 +563,24 @@ export default function CheckstyleQuiz() {
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {!gameStarted ? (
           // Start Screen
           <div className="text-center">
-            <div className="study-card p-12 max-w-2xl mx-auto">
-              <div className="floating-element mb-8">
-                <TrophyIcon className="h-20 w-20 text-yellow-500 mx-auto" />
+            <div className="study-card p-8 sm:p-12 max-w-2xl mx-auto">
+              <div className="floating-element mb-6 sm:mb-8">
+                <TrophyIcon className="h-16 w-16 sm:h-20 sm:w-20 text-yellow-500 mx-auto" />
               </div>
               
-              <h2 className="text-3xl font-bold text-slate-800 mb-4">Ready to Test Your Knowledge?</h2>
-              <p className="text-lg text-slate-600 mb-8">
+              <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-3 sm:mb-4">Ready to Test Your Knowledge?</h2>
+              <p className="text-base sm:text-lg text-slate-600 mb-6 sm:mb-8">
                 Challenge yourself with Checkstyle rules! You&apos;ll see rule names and need to guess what they do.
               </p>
 
               {/* Category Selection */}
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-slate-800 mb-4">Choose Category:</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="mb-6 sm:mb-8">
+                <h3 className="text-lg sm:text-xl font-semibold text-slate-800 mb-3 sm:mb-4">Choose Category:</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {categories.map((category) => (
                     <button
                       key={category.id}
@@ -592,7 +592,7 @@ export default function CheckstyleQuiz() {
                         setCurrentRuleIndex(0);
                         setShowAnswer(false);
                       }}
-                      className={`p-4 rounded-xl text-sm font-medium transition-all duration-200 ${
+                      className={`p-3 sm:p-4 rounded-xl text-sm font-medium transition-all duration-200 ${
                         selectedCategory === category.id
                           ? 'bg-indigo-600 text-white shadow-lg transform scale-105'
                           : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 hover:shadow-md'
@@ -607,19 +607,19 @@ export default function CheckstyleQuiz() {
 
               <button
                 onClick={handleStartGame}
-                className="inline-flex items-center px-8 py-4 bg-indigo-600 text-white text-xl font-semibold rounded-2xl hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl mx-auto"
+                className="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-indigo-600 text-white text-lg sm:text-xl font-semibold rounded-2xl hover:bg-indigo-700 transition-colors duration-200 shadow-lg hover:shadow-xl mx-auto"
               >
-                <PlayIcon className="h-6 w-6 mr-3" />
+                <PlayIcon className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3" />
                 Start Quiz
               </button>
 
               {score.total > 0 && (
-                <div className="mt-8 p-6 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
-                  <h3 className="text-lg font-semibold text-yellow-800 mb-2 flex items-center justify-center">
-                    <TrophyIcon className="h-6 w-6 mr-2" />
+                <div className="mt-6 sm:mt-8 p-4 sm:p-6 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl border border-yellow-200">
+                  <h3 className="text-base sm:text-lg font-semibold text-yellow-800 mb-2 flex items-center justify-center">
+                    <TrophyIcon className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
                     Last Score
                   </h3>
-                  <div className={`text-2xl font-bold ${getScoreColor()}`}>
+                  <div className={`text-xl sm:text-2xl font-bold ${getScoreColor()}`}>
                     {score.correct}/{score.total} ({Math.round((score.correct / score.total) * 100)}%)
                   </div>
                 </div>
@@ -628,162 +628,177 @@ export default function CheckstyleQuiz() {
           </div>
         ) : (
           // Quiz Interface
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             {/* Progress Bar */}
-            <div className="glass-card p-6 rounded-2xl">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-sm font-medium text-slate-600">
+            <div className="glass-card p-4 sm:p-6 rounded-2xl">
+              <div className="flex items-center justify-between mb-3 sm:mb-4">
+                <div className="text-xs sm:text-sm font-medium text-slate-600">
                   Question {currentRuleIndex + 1} of {shuffledRules.length}
                 </div>
-                <div className={`text-sm font-medium ${getScoreColor()}`}>
+                <div className={`text-xs sm:text-sm font-medium ${getScoreColor()}`}>
                   Score: {score.correct}/{score.total}
                 </div>
               </div>
-              <div className="w-full bg-slate-200 rounded-full h-3">
+              <div className="w-full bg-slate-200 rounded-full h-2 sm:h-3">
                 <div 
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-300"
+                  className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 sm:h-3 rounded-full transition-all duration-300"
                   style={{ width: `${((currentRuleIndex + 1) / shuffledRules.length) * 100}%` }}
                 ></div>
               </div>
             </div>
 
             {currentRule && (
-              <div className="study-card p-8">
+              <div className="study-card p-6 sm:p-8">
                 {/* Rule Card */}
-                <div className="text-center mb-8">
-                  <div className={`inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r ${getCategoryColor(currentRule.category)} text-white text-sm font-medium mb-4`}>
+                <div className="text-center mb-6 sm:mb-8">
+                  <div className={`inline-flex items-center px-3 sm:px-4 py-1 sm:py-2 rounded-full bg-gradient-to-r ${getCategoryColor(currentRule.category)} text-white text-xs sm:text-sm font-medium mb-3 sm:mb-4`}>
                     {currentRule.category}
                   </div>
-                  <h2 className="text-4xl font-bold text-slate-800 mb-4">
+                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-800 mb-3 sm:mb-4">
                     {currentRule.name}
                   </h2>
-                  <p className="text-lg text-slate-600 mb-6">
+                  <p className="text-base sm:text-lg text-slate-600 mb-4 sm:mb-6">
                     Used in: <span className="font-semibold">{currentRule.whereUsed}</span>
                   </p>
                   
                   {!showAnswer ? (
                     <div className="text-center">
-                      <p className="text-xl text-slate-700 mb-8">
+                      <p className="text-lg sm:text-xl text-slate-700 mb-6 sm:mb-8">
                         Do you know what this Checkstyle rule checks for?
                       </p>
                       
-                      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                      <div className="flex flex-col gap-3 sm:gap-4 max-w-md mx-auto">
                         <button
                           onClick={handleKnowIt}
-                          className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+                          className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
                         >
-                          <CheckCircleIcon className="h-5 w-5 mr-2" />
+                          <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                           I Know It!
                         </button>
                         <button
                           onClick={() => setShowAnswer(true)}
-                          className="inline-flex items-center px-6 py-3 bg-slate-600 text-white font-medium rounded-xl hover:bg-slate-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+                          className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-slate-600 text-white font-medium rounded-xl hover:bg-slate-700 transition-colors duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
                         >
-                          <EyeIcon className="h-5 w-5 mr-2" />
+                          <EyeIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                           Show Answer
                         </button>
                         <button
                           onClick={handleDontKnowIt}
-                          className="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+                          className="inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
                         >
-                          <XMarkIcon className="h-5 w-5 mr-2" />
+                          <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                           Don&apos;t Know
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                       {/* Answer Section */}
-                      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6">
-                        <h3 className="text-xl font-semibold text-emerald-800 mb-3">What it checks:</h3>
-                        <p className="text-slate-700 leading-relaxed mb-4">{currentRule.whatItChecks}</p>
+                      <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-4 sm:p-6">
+                        <h3 className="text-lg sm:text-xl font-semibold text-emerald-800 mb-2 sm:mb-3">What it checks:</h3>
+                        <p className="text-slate-700 leading-relaxed mb-3 sm:mb-4 text-sm sm:text-base">{currentRule.whatItChecks}</p>
                         
-                        <h3 className="text-xl font-semibold text-emerald-800 mb-3">Why it matters:</h3>
-                        <p className="text-slate-700 leading-relaxed">{currentRule.whyItMatters}</p>
+                        <h3 className="text-lg sm:text-xl font-semibold text-emerald-800 mb-2 sm:mb-3">Why it matters:</h3>
+                        <p className="text-slate-700 leading-relaxed text-sm sm:text-base">{currentRule.whyItMatters}</p>
                       </div>
 
                       {/* Examples */}
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                          <h4 className="text-lg font-semibold text-red-800 mb-3 flex items-center">
-                            <XMarkIcon className="h-5 w-5 mr-2" />
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                        <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4">
+                          <h4 className="text-base sm:text-lg font-semibold text-red-800 mb-2 sm:mb-3 flex items-center">
+                            <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                             Common Violation
                           </h4>
-                          <pre className="text-sm text-red-700 whitespace-pre-wrap font-mono">
+                          <pre className="text-xs sm:text-sm text-red-700 whitespace-pre-wrap font-mono overflow-x-auto">
                             {currentRule.commonViolations}
                           </pre>
                         </div>
                         
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                          <h4 className="text-lg font-semibold text-emerald-800 mb-3 flex items-center">
-                            <CheckCircleIcon className="h-5 w-5 mr-2" />
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 sm:p-4">
+                          <h4 className="text-base sm:text-lg font-semibold text-emerald-800 mb-2 sm:mb-3 flex items-center">
+                            <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                             Correct Usage
                           </h4>
-                          <pre className="text-sm text-emerald-700 whitespace-pre-wrap font-mono">
+                          <pre className="text-xs sm:text-sm text-emerald-700 whitespace-pre-wrap font-mono overflow-x-auto">
                             {currentRule.correctUsage}
                           </pre>
                         </div>
                       </div>
 
-                      {/* Action Buttons */}
-                      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-6">
+                      {/* Feedback Buttons */}
+                      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 sm:pt-6">
                         <button
-                          onClick={handleKnowIt}
-                          className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+                          onClick={() => {
+                            setScore(prev => ({ ...prev, correct: prev.correct + 1, total: prev.total + 1 }));
+                            nextRule();
+                          }}
+                          className="flex-1 inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-emerald-600 text-white font-medium rounded-xl hover:bg-emerald-700 transition-colors duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
                         >
-                          <CheckCircleIcon className="h-5 w-5 mr-2" />
+                          <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                           I Knew It!
                         </button>
                         <button
-                          onClick={handleDontKnowIt}
-                          className="inline-flex items-center px-6 py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+                          onClick={() => {
+                            setScore(prev => ({ ...prev, total: prev.total + 1 }));
+                            nextRule();
+                          }}
+                          className="flex-1 inline-flex items-center justify-center px-4 sm:px-6 py-2 sm:py-3 bg-red-600 text-white font-medium rounded-xl hover:bg-red-700 transition-colors duration-200 shadow-md hover:shadow-lg text-sm sm:text-base"
                         >
-                          <XMarkIcon className="h-5 w-5 mr-2" />
+                          <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                           I Didn&apos;t Know
                         </button>
                       </div>
                     </div>
                   )}
                 </div>
-
-                {/* Navigation */}
-                <div className="flex justify-between items-center pt-8 border-t border-slate-200">
-                  <button
-                    onClick={prevRule}
-                    disabled={currentRuleIndex === 0}
-                    className="inline-flex items-center px-4 py-2 bg-slate-600 text-white font-medium rounded-xl hover:bg-slate-700 transition-colors duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-600"
-                  >
-                    <PrevIcon className="h-4 w-4 mr-2" />
-                    Previous
-                  </button>
-                  
-                  <div className="flex items-center space-x-4">
-                                         <button
-                       onClick={restartGame}
-                       className="inline-flex items-center px-4 py-2 bg-slate-600 text-white font-medium rounded-xl hover:bg-slate-700 transition-colors duration-200 shadow-md hover:shadow-lg"
-                     >
-                       <ArrowPathIcon className="h-4 w-4 mr-2" />
-                       Restart
-                     </button>
-                    <button
-                      onClick={() => setGameStarted(false)}
-                      className="inline-flex items-center px-4 py-2 bg-white text-slate-700 border-2 border-slate-300 font-medium rounded-xl hover:bg-slate-50 hover:border-slate-400 transition-colors duration-200 shadow-md hover:shadow-lg"
-                    >
-                      End Quiz
-                    </button>
-                  </div>
-                  
-                  <button
-                    onClick={nextRule}
-                    disabled={currentRuleIndex === shuffledRules.length - 1}
-                    className="inline-flex items-center px-4 py-2 bg-slate-600 text-white font-medium rounded-xl hover:bg-slate-700 transition-colors duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-slate-600"
-                  >
-                    Next
-                    <ArrowRightIcon className="h-4 w-4 ml-2" />
-                  </button>
-                </div>
               </div>
             )}
+
+            {/* Navigation */}
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-0">
+              <div className="flex gap-3">
+                <button
+                  onClick={prevRule}
+                  disabled={currentRuleIndex === 0}
+                  className="inline-flex items-center px-4 py-2 bg-slate-600 text-white text-sm font-medium rounded-xl hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  <PrevIcon className="h-4 w-4 mr-2" />
+                  Previous
+                </button>
+                <button
+                  onClick={() => setShowAnswer(!showAnswer)}
+                  className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors duration-200"
+                >
+                  <EyeIcon className="h-4 w-4 mr-2" />
+                  {showAnswer ? 'Hide' : 'Show'} Answer
+                </button>
+              </div>
+              
+              <div className="text-center sm:text-left">
+                <p className="text-xs sm:text-sm text-slate-600 mb-2">
+                  You&apos;ll see a Checkstyle rule name and where it&apos;s used
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                  {currentRuleIndex === shuffledRules.length - 1 ? (
+                    <button
+                      onClick={restartGame}
+                      className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium rounded-xl hover:from-purple-700 hover:to-blue-700 transition-colors duration-200 shadow-md hover:shadow-lg"
+                    >
+                      <ArrowPathIcon className="h-4 w-4 mr-2" />
+                      Restart Quiz
+                    </button>
+                  ) : (
+                    <button
+                      onClick={nextRule}
+                      className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-xl hover:bg-indigo-700 transition-colors duration-200"
+                    >
+                      Next Rule
+                      <ArrowRightIcon className="h-4 w-4 ml-2" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         )}
 

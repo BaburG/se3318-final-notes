@@ -871,35 +871,35 @@ export default function CheckstyleReference() {
         <div className="absolute inset-0 bg-mesh"></div>
         <div className="relative glass-card border-0 rounded-none">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between py-8">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-6 sm:py-8 space-y-4 sm:space-y-0">
+              <div className="flex items-center space-x-3 sm:space-x-4 order-2 sm:order-1">
                 <Link
                   href="/"
-                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center text-sm sm:text-base"
                 >
-                  <ArrowLeftIcon className="h-5 w-5 mr-2" />
+                  <ArrowLeftIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                   Back to Hub
                 </Link>
                 <Link
                   href="/checkstyle-quiz"
-                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center text-sm sm:text-base"
                 >
-                  <BeakerIcon className="h-5 w-5 mr-2" />
+                  <BeakerIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                   Take Quiz
                 </Link>
               </div>
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center space-x-3 sm:space-x-4 order-1 sm:order-2">
                 <div className="floating-element">
-                  <CheckCircleIcon className="h-10 w-10 text-emerald-600" />
+                  <CheckCircleIcon className="h-8 w-8 sm:h-10 sm:w-10 text-emerald-600" />
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold gradient-text">Checkstyle Reference</h1>
-                  <p className="text-lg text-slate-600">Complete rules guide with examples</p>
+                  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold gradient-text">Checkstyle Reference</h1>
+                  <p className="text-sm sm:text-base lg:text-lg text-slate-600">Complete rules guide with examples</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <div className="glass-card px-3 py-1 rounded-full">
-                  <span className="text-sm font-medium text-emerald-600">{categories[0].count}+ Rules</span>
+              <div className="flex items-center space-x-2 order-3">
+                <div className="glass-card px-2 sm:px-3 py-1 rounded-full">
+                  <span className="text-xs sm:text-sm font-medium text-emerald-600">{categories[0].count}+ Rules</span>
                 </div>
               </div>
             </div>
@@ -909,17 +909,17 @@ export default function CheckstyleReference() {
 
       {/* Search and Filter */}
       <div className="sticky top-0 z-40 glass-card border-0 border-b border-white/20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <div className="flex flex-col space-y-4">
             {/* Search */}
-            <div className="relative flex-1 max-w-md">
+            <div className="relative w-full">
               <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
               <input
                 type="text"
                 placeholder="Search rules..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-10 py-3 bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full pl-10 pr-10 py-3 bg-white/80 backdrop-blur-sm border border-slate-200/60 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-sm sm:text-base"
               />
               {searchTerm && (
                 <button
@@ -937,14 +937,14 @@ export default function CheckstyleReference() {
                 <button
                   key={category.id}
                   onClick={() => setSelectedCategory(category.id)}
-                  className={`px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                  className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-xl transition-all duration-200 ${
                     selectedCategory === category.id
                       ? 'bg-indigo-600 text-white shadow-lg'
                       : 'bg-white/60 hover:bg-white/80 text-slate-700 hover:shadow-md hover:-translate-y-0.5'
                   }`}
                 >
                   {category.label}
-                  <span className="ml-2 text-xs opacity-75">({category.count})</span>
+                  <span className="ml-1 sm:ml-2 text-xs opacity-75">({category.count})</span>
                 </button>
               ))}
             </div>
@@ -953,82 +953,82 @@ export default function CheckstyleReference() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {filteredSections.length === 0 ? (
-          <div className="text-center py-16">
-            <ExclamationTriangleIcon className="h-16 w-16 text-slate-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-slate-600 mb-2">No rules found</h3>
-            <p className="text-slate-500">Try adjusting your search terms or category filter.</p>
+          <div className="text-center py-12 sm:py-16">
+            <ExclamationTriangleIcon className="h-12 w-12 sm:h-16 sm:w-16 text-slate-400 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold text-slate-600 mb-2">No rules found</h3>
+            <p className="text-sm sm:text-base text-slate-500">Try adjusting your search terms or category filter.</p>
           </div>
         ) : (
-          <div className="space-y-12">
+          <div className="space-y-8 sm:space-y-12">
             {filteredSections.map((section) => (
               <div key={section.id} className="study-card">
-                <div className="p-8 border-b border-slate-200/60">
-                  <div className="flex items-center space-x-4">
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-r ${section.color} p-3`}>
+                <div className="p-6 sm:p-8 border-b border-slate-200/60">
+                  <div className="flex items-center space-x-3 sm:space-x-4">
+                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-r ${section.color} p-2 sm:p-3`}>
                       <section.icon className="w-full h-full text-white" />
                     </div>
                     <div>
-                      <h2 className="text-3xl font-bold text-slate-800">{section.title}</h2>
-                      <p className="text-lg text-slate-600 mt-1">{section.description}</p>
+                      <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">{section.title}</h2>
+                      <p className="text-base sm:text-lg text-slate-600 mt-1">{section.description}</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="p-8">
-                  <div className="grid gap-8">
+                <div className="p-6 sm:p-8">
+                  <div className="grid gap-6 sm:gap-8">
                     {section.rules.map((rule, ruleIndex) => (
                       <div key={ruleIndex} className={`study-section bg-gradient-to-br ${section.bgColor} border-white/40`}>
-                        <div className="flex items-start justify-between mb-6">
-                          <div>
-                            <h3 className={`text-2xl font-bold ${section.textColor} mb-2`}>{rule.name}</h3>
+                        <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+                          <div className="flex-1">
+                            <h3 className={`text-xl sm:text-2xl font-bold ${section.textColor} mb-2`}>{rule.name}</h3>
                             <div className="flex items-center space-x-2">
-                              <span className="text-sm font-medium text-slate-600 bg-white/60 px-3 py-1 rounded-full">
+                              <span className="text-xs sm:text-sm font-medium text-slate-600 bg-white/60 px-2 sm:px-3 py-1 rounded-full">
                                 {rule.whereUsed}
                               </span>
                             </div>
                           </div>
-                          <LightBulbIcon className={`h-8 w-8 ${section.textColor} opacity-60`} />
+                          <LightBulbIcon className={`h-6 w-6 sm:h-8 sm:w-8 ${section.textColor} opacity-60 flex-shrink-0`} />
                         </div>
 
-                        <div className="space-y-6">
+                        <div className="space-y-4 sm:space-y-6">
                           <div>
-                            <h4 className={`text-lg font-semibold ${section.textColor} mb-3 flex items-center`}>
-                              <DocumentTextIcon className="h-5 w-5 mr-2" />
+                            <h4 className={`text-base sm:text-lg font-semibold ${section.textColor} mb-2 sm:mb-3 flex items-center`}>
+                              <DocumentTextIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                               What it checks
                             </h4>
-                            <p className="text-slate-700 leading-relaxed">{rule.whatItChecks}</p>
+                            <p className="text-slate-700 leading-relaxed text-sm sm:text-base">{rule.whatItChecks}</p>
                           </div>
 
                           <div>
-                            <h4 className={`text-lg font-semibold ${section.textColor} mb-3 flex items-center`}>
-                              <ExclamationTriangleIcon className="h-5 w-5 mr-2" />
+                            <h4 className={`text-base sm:text-lg font-semibold ${section.textColor} mb-2 sm:mb-3 flex items-center`}>
+                              <ExclamationTriangleIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                               Why it matters
                             </h4>
-                            <p className="text-slate-700 leading-relaxed">{rule.whyItMatters}</p>
+                            <p className="text-slate-700 leading-relaxed text-sm sm:text-base">{rule.whyItMatters}</p>
                           </div>
 
-                          <div className="grid md:grid-cols-2 gap-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                             <div>
-                              <h4 className="text-lg font-semibold text-red-700 mb-3 flex items-center">
-                                <XMarkIcon className="h-5 w-5 mr-2" />
+                              <h4 className="text-base sm:text-lg font-semibold text-red-700 mb-2 sm:mb-3 flex items-center">
+                                <XMarkIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Common Violations
                               </h4>
-                              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                                <pre className="text-sm text-red-800 whitespace-pre-wrap font-mono">
+                              <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4">
+                                <pre className="text-xs sm:text-sm text-red-800 whitespace-pre-wrap font-mono overflow-x-auto">
                                   {Array.isArray(rule.commonViolations) ? rule.commonViolations.join('\n') : rule.commonViolations}
                                 </pre>
                               </div>
                             </div>
 
                             <div>
-                              <h4 className="text-lg font-semibold text-emerald-700 mb-3 flex items-center">
-                                <CheckCircleIcon className="h-5 w-5 mr-2" />
+                              <h4 className="text-base sm:text-lg font-semibold text-emerald-700 mb-2 sm:mb-3 flex items-center">
+                                <CheckCircleIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                                 Correct Usage
                               </h4>
-                              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                                <pre className="text-sm text-emerald-800 whitespace-pre-wrap font-mono">
+                              <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 sm:p-4">
+                                <pre className="text-xs sm:text-sm text-emerald-800 whitespace-pre-wrap font-mono overflow-x-auto">
                                   {Array.isArray(rule.correctUsage) ? rule.correctUsage.join('\n') : rule.correctUsage}
                                 </pre>
                               </div>
@@ -1045,33 +1045,29 @@ export default function CheckstyleReference() {
         )}
 
         {/* Quick Reference Tips */}
-        <div className="mt-16 study-section bg-gradient-to-br from-indigo-50/80 to-purple-50/80 border-indigo-200/40">
-          <div className="flex items-center mb-8">
-            <SparklesIcon className="h-10 w-10 text-indigo-600 mr-4" />
-            <h2 className="text-3xl font-bold text-indigo-900">Quick Reference Tips</h2>
+        <div className="mt-12 sm:mt-16 study-section bg-gradient-to-br from-indigo-50/80 to-purple-50/80 border-indigo-200/40">
+          <div className="flex items-center mb-6 sm:mb-8">
+            <SparklesIcon className="h-8 w-8 sm:h-10 sm:w-10 text-indigo-600 mr-3 sm:mr-4" />
+            <h2 className="text-2xl sm:text-3xl font-bold text-indigo-900">Quick Reference Tips</h2>
           </div>
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-indigo-800 flex items-center">
-                <LightBulbIcon className="h-6 w-6 mr-2" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
+            <div className="space-y-3 sm:space-y-4">
+              <h3 className="text-lg sm:text-xl font-semibold text-indigo-800 flex items-center">
+                <LightBulbIcon className="h-5 w-5 sm:h-6 sm:w-6 mr-2" />
                 Understanding Rule Categories
               </h3>
-              <ul className="space-y-3">
+              <ul className="space-y-2 sm:space-y-3">
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700"><strong>Class-Level:</strong> Focus on overall class design and structure</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-blue-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base"><strong>Class-Level:</strong> Focus on overall class design and structure</span>
                 </li>
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-emerald-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700"><strong>Method-Level:</strong> Ensure good method design and implementation</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-emerald-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base"><strong>Method-Level:</strong> Ensure good method design and implementation</span>
                 </li>
                 <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700"><strong>Variable-Level:</strong> Proper variable naming and usage patterns</span>
-                </li>
-                <li className="flex items-start group">
-                  <div className="w-3 h-3 bg-orange-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700"><strong>Control-Flow:</strong> Ensure clear and predictable program flow</span>
+                  <div className="w-2 h-2 sm:w-3 sm:h-3 bg-purple-500 rounded-full mt-2 mr-3 sm:mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
+                  <span className="text-slate-700 text-sm sm:text-base"><strong>Variable-Level:</strong> Proper variable naming and usage patterns</span>
                 </li>
               </ul>
             </div>
