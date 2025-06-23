@@ -106,7 +106,7 @@ export default function CheckstyleReference() {
         {
           name: 'AbstractClassName',
           whereUsed: 'Abstract Class Declaration',
-          whatItChecks: 'Ensures abstract class names conform to a pattern, typically starting with "Abstract".',
+          whatItChecks: 'Ensures abstract class names conform to a pattern, typically starting with &quot;Abstract&quot;.',
           whyItMatters: 'Improves readability by making abstract base classes easily identifiable.',
           commonViolations: [
             'abstract class Second {} // violation, name does not match pattern'
@@ -880,6 +880,13 @@ export default function CheckstyleReference() {
                   <ArrowLeftIcon className="h-5 w-5 mr-2" />
                   Back to Hub
                 </Link>
+                <Link
+                  href="/checkstyle-quiz"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
+                >
+                  <BeakerIcon className="h-5 w-5 mr-2" />
+                  Take Quiz
+                </Link>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="floating-element">
@@ -1076,7 +1083,7 @@ export default function CheckstyleReference() {
               <ul className="space-y-3">
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Focus on the "Why it matters" - understand the reasoning behind each rule</span>
+                  <span className="text-slate-700">Focus on the &quot;Why it matters&quot; - understand the reasoning behind each rule</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
@@ -1104,7 +1111,7 @@ export default function CheckstyleReference() {
               SE3318: Checkstyle Reference - Complete Rules Guide
             </p>
             <p className="text-slate-500 mt-2">
-              Understanding the "why" behind each rule is key to writing better code! 🎯✨
+              Understanding the &quot;why&quot; behind each rule is key to writing better code! 🎯✨
             </p>
           </div>
         </div>

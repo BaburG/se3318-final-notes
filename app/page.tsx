@@ -40,6 +40,16 @@ export default function Home() {
       topics: ['Class-Level Checks', 'Method-Level Checks', 'Variable Checks', 'Control Flow', 'Java-Specific']
     },
     {
+      href: '/checkstyle-quiz',
+      title: 'Checkstyle Quiz',
+      description: 'Interactive game to test your knowledge of Checkstyle rules',
+      icon: BeakerIcon,
+      gradient: 'from-indigo-500 to-purple-500',
+      bgGradient: 'from-indigo-50 to-purple-50',
+      weeks: 'Game Mode',
+      topics: ['Rule Recognition', 'Interactive Learning', 'Score Tracking', 'Self Assessment']
+    },
+    {
       href: '/quick-reference',
       title: 'Quick Reference',
       description: 'Last-minute study guide with essential concepts',
@@ -85,7 +95,7 @@ export default function Home() {
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               Master Software Construction concepts with our comprehensive study materials. 
-              From Working Classes to Defensive Programming, we've got you covered.
+              From Working Classes to Defensive Programming, we&apos;ve got you covered.
             </p>
             
             {/* Quick Stats */}
@@ -130,7 +140,7 @@ export default function Home() {
       {/* Main Content */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-20">
         {activeTab === 'overview' && (
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {navigationCards.map((card, index) => (
               <Link key={index} href={card.href} className="group">
                 <div className="study-card p-8 h-full">

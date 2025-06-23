@@ -947,13 +947,13 @@ export default function StudyNotes() {
             {
               subtitle: 'The Concept',
               items: [
-                'A "barricade" is a boundary in your code that separates trusted ("clean") data from untrusted ("dirty") data.',
+                'A &quot;barricade&quot; is a boundary in your code that separates trusted (&quot;clean&quot;) data from untrusted (&quot;dirty&quot;) data.',
                 'Public methods form the barricade. They must validate and sanitize all external inputs.',
                 'Private methods exist inside the barricade and can assume the data they receive is clean and safe.'
               ],
               imageDescriptions: [
                 {
-                  description: 'A diagram shows external data sources (GUI, CLI, Files) as "dirty and untrusted". This data flows into "the barricade," which consists of validation classes. Data that passes through the barricade flows to the internal classes, which can assume the data is "clean and trusted".'
+                  description: 'A diagram shows external data sources (GUI, CLI, Files) as &quot;dirty and untrusted&quot;. This data flows into &quot;the barricade,&quot; which consists of validation classes. Data that passes through the barricade flows to the internal classes, which can assume the data is &quot;clean and trusted&quot;.'
                 }
               ]
             }
@@ -966,7 +966,7 @@ export default function StudyNotes() {
               subtitle: 'Key Differences',
               items: [
                 'Assertions: For development-time checks to catch programming errors (bugs). They check for conditions that should be IMPOSSIBLE if the code is correct. They are disabled in production.',
-                'Exceptions: For handling errors that can occur at runtime, even with correct code (e.g., file not found). They are part of the program\'s normal error-handling flow.',
+                'Exceptions: For handling errors that can occur at runtime, even with correct code (e.g., file not found). They are part of the program&apos;s normal error-handling flow.',
                 'An assertion failure means there is a bug in the code. An exception means an external condition or user action caused an error that the program might be able to recover from.'
               ]
             },
@@ -1332,11 +1332,11 @@ export default function StudyNotes() {
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Variable scope: Keep "live time" short, declare close to first use.</span>
+                  <span className="text-slate-700">Variable scope: Keep &quot;live time&quot; short, declare close to first use.</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Loop control: Don't modify control variables, watch for off-by-one errors.</span>
+                  <span className="text-slate-700">Loop control: Don&apos;t modify control variables, watch for off-by-one errors.</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>

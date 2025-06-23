@@ -7,7 +7,6 @@ import {
   CheckCircleIcon,
   ExclamationTriangleIcon,
   LightBulbIcon,
-  SparklesIcon,
   BookOpenIcon,
   CodeBracketIcon,
   BeakerIcon,
@@ -27,8 +26,8 @@ export default function QuickReference() {
       textColor: 'text-emerald-900',
       points: [
         'LSP: Subclass objects must be substitutable for superclass objects without errors.',
-        'LSP Preconditions: Subclass preconditions must be weaker or equal to superclass\'s.',
-        'LSP Postconditions: Subclass postconditions must be stronger or equal to superclass\'s.',
+        'LSP Preconditions: Subclass preconditions must be weaker or equal to superclass&apos;s.',
+        'LSP Postconditions: Subclass postconditions must be stronger or equal to superclass&apos;s.',
         'Law of Demeter: "Talk only to your immediate friends." Avoid long chains like `a.getB().getC().doSomething()`.'
       ]
     },
@@ -67,7 +66,7 @@ export default function QuickReference() {
       points: [
         'Minimize Scope: Declare variables as close to their first use as possible to reduce "live time".',
         'One Purpose: Each variable should have exactly one purpose.',
-        'Loop Control: Do not modify a `for` loop\'s control variable inside the loop body.',
+        'Loop Control: Do not modify a `for` loop&apos;s control variable inside the loop body.',
         'Loop Exits: Use `break` for early exits; avoid complex boolean flags. Use `continue` at the top of a loop.'
       ]
     }
@@ -108,7 +107,7 @@ export default function QuickReference() {
       category: 'Control-Flow',
       color: 'bg-orange-500',
       rules: [
-        'ModifiedControlVariable: Don\'t modify `for` loop control vars.',
+        'ModifiedControlVariable: Don&apos;t modify `for` loop control vars.',
         'MissingSwitchDefault: Always include `default` in `switch`.',
         'SimplifyBooleanExpression: Avoid `if (cond == true)`.',
         'FallsThrough: Comment intentional fall-throughs.'
@@ -188,7 +187,7 @@ export default function QuickReference() {
       color: 'text-emerald-600',
       tips: [
         'Start with concepts you know well to build confidence.',
-        'Don\'t spend too long on any single question.',
+        'Don&apos;t spend too long on any single question.',
         'Review your answers if time permits.',
         'Use process of elimination for multiple-choice questions.'
       ]
@@ -447,10 +446,10 @@ export default function QuickReference() {
           <div className="text-center">
             <div className="flex items-center justify-center mb-6">
               <RocketLaunchIcon className="h-16 w-16 text-indigo-600 mr-4" />
-              <h2 className="text-4xl font-bold text-indigo-900">You've Got This! 🚀</h2>
+              <h2 className="text-4xl font-bold text-indigo-900">You&apos;ve Got This! 🚀</h2>
             </div>
             <p className="text-xl text-slate-700 mb-8 max-w-3xl mx-auto leading-relaxed">
-              You've covered all the essential material. Trust your preparation, stay calm during the exam, 
+              You&apos;ve covered all the essential material. Trust your preparation, stay calm during the exam, 
               and remember that understanding the principles behind the rules is more important than 
               memorizing every detail.
             </p>
@@ -462,7 +461,7 @@ export default function QuickReference() {
                 <span className="text-lg font-semibold text-emerald-600">🎯 Focus on Understanding</span>
               </div>
               <div className="glass-card px-6 py-3 rounded-2xl">
-                <span className="text-lg font-semibold text-purple-600">🚀 You're Ready!</span>
+                <span className="text-lg font-semibold text-purple-600">🚀 You&apos;re Ready!</span>
               </div>
             </div>
           </div>
@@ -477,7 +476,7 @@ export default function QuickReference() {
               SE3318: Quick Reference - Final Exam Preparation
             </p>
             <p className="text-slate-500 mt-2">
-              Best of luck on your final exam! You've prepared well. 🌟💪
+              Best of luck on your final exam! You&apos;ve prepared well. 🌟💪
             </p>
           </div>
         </div>
