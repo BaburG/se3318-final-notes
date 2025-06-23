@@ -13,8 +13,126 @@ import {
   DocumentTextIcon,
   SparklesIcon,
   AcademicCapIcon,
-  ClockIcon
+  ClockIcon,
+  XCircleIcon,
+  QuestionMarkCircleIcon,
+  PhotoIcon
 } from '@heroicons/react/24/outline';
+
+// Type definitions
+interface ImageDescription {
+  description: string;
+}
+
+interface CodeExample {
+  title: string;
+  language: string;
+  type: string;
+  code: string[];
+}
+
+interface PopQuiz {
+  question: string;
+  answer: string;
+  imageDescription?: string;
+  answerImageDescription?: string;
+}
+
+interface ContentBlock {
+  subtitle: string;
+  items?: string[];
+  imageDescriptions?: ImageDescription[];
+  codeExamples?: CodeExample[];
+  popQuizzes?: PopQuiz[];
+}
+
+interface Section {
+  title: string;
+  content: ContentBlock[];
+}
+
+interface WeekContent {
+  id: string;
+  title: string;
+  color: string;
+  bgColor: string;
+  textColor: string;
+  sections: Section[];
+}
+
+// A dedicated component for rendering code blocks
+const CodeBlock = ({ title, code, language, type = 'neutral' }: { title: string, code: string[], language: string, type?: 'good' | 'bad' | 'neutral' }) => {
+  const baseClasses = 'rounded-xl p-4 border my-4';
+  const titleBaseClasses = 'font-semibold mb-2 flex items-center';
+  const preClasses = 'text-sm whitespace-pre-wrap font-mono';
+
+  let style = {
+    bgColor: 'bg-slate-50 border-slate-200',
+    textColor: 'text-slate-800',
+    titleColor: 'text-slate-700',
+    Icon: LightBulbIcon
+  };
+
+  if (type === 'good') {
+    style = {
+      bgColor: 'bg-emerald-50 border-emerald-200',
+      textColor: 'text-emerald-800',
+      titleColor: 'text-emerald-700',
+      Icon: CheckCircleIcon
+    };
+  } else if (type === 'bad') {
+    style = {
+      bgColor: 'bg-red-50 border-red-200',
+      textColor: 'text-red-800',
+      titleColor: 'text-red-700',
+      Icon: XCircleIcon
+    };
+  }
+
+  return (
+    <div className={`${baseClasses} ${style.bgColor}`}>
+      <h5 className={`${titleBaseClasses} ${style.titleColor}`}>
+        <style.Icon className="h-5 w-5 mr-2 flex-shrink-0" />
+        {title} <span className="ml-2 text-xs uppercase opacity-60">({language})</span>
+      </h5>
+      <pre className={preClasses}><code className={style.textColor}>{code.join('\n')}</code></pre>
+    </div>
+  );
+};
+
+// Component for Pop Quizzes
+const PopQuizBlock = ({ question, answer, imageDescription, answerImageDescription }: { question: string, answer: string, imageDescription?: string, answerImageDescription?: string }) => {
+  return (
+    <div className="rounded-xl p-4 border my-4 bg-yellow-50 border-yellow-200">
+      <h5 className="font-semibold mb-2 flex items-center text-yellow-800">
+        <QuestionMarkCircleIcon className="h-5 w-5 mr-2 flex-shrink-0" />
+        Pop Quiz
+      </h5>
+      <div className="pl-7">
+        <p className="font-semibold text-slate-800 mb-2">{question}</p>
+        {imageDescription && <ImageDescriptionBlock description={imageDescription} />}
+        <div className="mt-3 pt-3 border-t border-yellow-300">
+          <p className="font-semibold text-emerald-800">Answer:</p>
+          <p className="text-slate-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: answer }}></p>
+          {answerImageDescription && <ImageDescriptionBlock description={answerImageDescription} />}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Component for Image/Diagram Descriptions
+const ImageDescriptionBlock = ({ description }: { description: string }) => {
+  return (
+    <div className="rounded-lg p-3 my-2 bg-slate-100 border border-slate-200 text-slate-600 italic text-sm">
+      <div className="flex items-start">
+        <PhotoIcon className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+        <div><strong>Diagram Description:</strong> {description}</div>
+      </div>
+    </div>
+  );
+};
+
 
 export default function StudyNotes() {
   const [expandedSections, setExpandedSections] = useState<string[]>(['week9']);
@@ -27,7 +145,7 @@ export default function StudyNotes() {
     );
   };
 
-  const weeklyContent = [
+  const weeklyContent: WeekContent[] = [
     {
       id: 'week9',
       title: 'Week 9: Working Classes',
@@ -36,86 +154,220 @@ export default function StudyNotes() {
       textColor: 'text-blue-900',
       sections: [
         {
-          title: 'Abstract Data Types (ADTs)',
+          title: 'Abstract Data Types (ADTs) & Key Principles',
           content: [
             {
               subtitle: 'Core Concepts',
               items: [
-                'Abstraction: Simplifying complex details by hiding lower-level implementations',
-                'Modularity: Dividing system into independent components',
-                'Encapsulation: Hiding internal details from the rest of the system',
-                'Separation of Concerns: Making specific features belong to single modules',
-                'User-Defined Types: Types defined by operations that can be performed on them'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Liskov Substitution Principle (LSP)',
-          content: [
-            {
-              subtitle: 'Key Concept',
-              items: [
-                'Objects of a superclass should be replaceable with objects of its subclasses without breaking the application',
-                'Overridden methods in subclasses need to accept same or less restrictive input parameter values'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Law of Demeter',
-          content: [
-            {
-              subtitle: 'Rule',
-              items: [
-                'An object should only "talk" to its immediate friends',
-                'Within a method, only call methods on: the object itself (this), objects passed as arguments, objects created within the method, direct component objects'
+                'Abstraction: Hiding low-level details with a simpler, higher-level idea.',
+                'Modularity: System can be divided into independent, testable components.',
+                'Encapsulation: Hiding implementation details and enforcing access through public interfaces.',
+                'Separation of Concerns: A feature is the responsibility of a single module.'
               ]
             },
             {
-              subtitle: 'Example',
+              subtitle: 'Liskov Substitution Principle (LSP)',
               items: [
-                'Violation: a.getB().getC().doSomething()',
-                'Better: a.doSomethingWithC() - where a handles B and C internally'
+                'Objects of a superclass shall be replaceable with objects of its subclasses without breaking the application.',
+                'Preconditions: A subclass method\'s precondition must be weaker than or equal to the superclass\'s. (You can accept more, not less).',
+                'Postconditions: A subclass method\'s postcondition must be stronger than or equal to the superclass\'s. (You must deliver as much or more).',
+              ]
+            },
+            {
+              subtitle: 'Law of Demeter (Principle of Least Knowledge)',
+              items: [
+                'An object should only "talk" to its immediate friends.',
+                'Avoid "reaching through" objects. This creates tight coupling and makes code brittle.',
+              ],
+              imageDescriptions: [
+                {
+                  description: 'A diagram shows an object `a:A` correctly calling methods (`doB()`, `dox()`) on its direct friend `b:B`. An invalid call is shown as a red line where `a` tries to "reach through" `b` to call a method (`doC()`) on an inner object `c:C`.'
+                }
               ]
             }
           ]
         },
         {
-          title: 'Good Encapsulation',
+          title: 'Good Encapsulation (with Checkstyle Rules)',
           content: [
             {
-              subtitle: 'Hide Utility Class Constructor',
-              items: [
-                'Utility classes (only static methods) should have private constructors',
-                'Prevents instantiation and signals class is not meant to be instantiated'
+              subtitle: 'Check: VisibilityModifier',
+              items: ['Ensures proper visibility of class members. By default, fields should be private.'],
+              codeExamples: [
+                {
+                  title: 'VisibilityModifier Violations',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'class Example1 {',
+                    '    // violation below, must have a visibility modifier \'must be private\'',
+                    '    int field1;',
+                    '    // violation below, protected not allowed \'must be private\'',
+                    '    protected String field2;',
+                    '    // violation below, not final \'must be private\'',
+                    '    public int field3 = 42;',
+                    '    // violation below, public immutable fields are not allowed \'must be private\'',
+                    '    public final int field5 = 42;',
+                    '    // violation below, HashSet is mutable \'must be private\'',
+                    '    public final Set<String> mySet1 = new HashSet<>();',
+                    '}'
+                  ]
+                }
+              ]
+            },
+            {
+              subtitle: 'Check: FinalClass',
+              items: ['Ensures that classes that cannot or should not be subclassed are marked as `final`. This applies to classes with only private constructors.'],
+              codeExamples: [
+                {
+                  title: 'FinalClass Violation',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'class B { // violation, \'Class B should be declared as final.\'',
+                    '    private B() {',
+                    '    }',
+                    '}'
+                  ]
+                }
+              ],
+              popQuizzes: [
+                {
+                  question: 'When do you need private constructors?',
+                  answer: 'For design patterns like the Singleton Pattern (to ensure only one instance is ever created) or the Factory Pattern (to control object creation through a static method).'
+                }
+              ]
+            },
+            {
+              subtitle: 'Check: HideUtilityClassConstructor',
+              items: ['Utility classes (those with only static members) should have a private constructor to prevent instantiation.'],
+              codeExamples: [
+                {
+                  title: 'Correct Utility Class with Exception',
+                  language: 'java',
+                  type: 'good',
+                  code: [
+                    'public class StringUtils // not final to allow subclassing',
+                    '{',
+                    '    protected StringUtils() {',
+                    '        // prevents calls from subclass',
+                    '        throw new UnsupportedOperationException();',
+                    '    }',
+                    '    public static int count(char c, String s) { ... }',
+                    '}'
+                  ]
+                }
+              ]
+            },
+            {
+              subtitle: 'Check: DesignForExtension',
+              items: ['Protects superclasses from being broken by subclasses. Overridable methods in non-final classes must be abstract, have an empty "hook" implementation, or be documented with Javadoc.'],
+              codeExamples: [
+                {
+                  title: 'Bad Design for Extension',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'public abstract class Plant {',
+                    '    // This method can be overridden, but has a concrete implementation.',
+                    '    // A subclass might forget to call super.validate(), breaking the contract.',
+                    '    protected void validate() {',
+                    '        if (roots == null) throw new IllegalArgumentException("No roots!");',
+                    '    }',
+                    '}'
+                  ]
+                },
+                {
+                  title: 'Good Design for Extension (Hook Method)',
+                  language: 'java',
+                  type: 'good',
+                  code: [
+                    'public abstract class Plant {',
+                    '    private void validate() {',
+                    '        if (roots == null) throw new ...;',
+                    '        validateEx(); // Call the hook for subclasses',
+                    '    }',
+                    '    // Subclasses can override this empty hook to add their own validation.',
+                    '    protected void validateEx() {}',
+                    '}'
+                  ]
+                }
               ]
             }
           ]
         },
         {
-          title: 'Good Abstractions',
+          title: 'Good Abstraction & Inheritance',
           content: [
             {
-              subtitle: 'Best Practices',
-              items: [
-                'Return Empty Array Instead of Null: Prevents NullPointerExceptions',
-                'Avoid Primitive Wrapper Instantiation: Use autoboxing or static factory methods',
-                'Inner Type Last: Nested classes/interfaces at bottom of top-level class'
+              subtitle: 'Check: AbstractClassName',
+              items: ['Ensures abstract class names conform to a pattern, typically starting with "Abstract".'],
+              codeExamples: [
+                {
+                  title: 'AbstractClassName Examples',
+                  language: 'java',
+                  type: 'neutral',
+                  code: [
+                    'class Example1 {',
+                    '    abstract class AbstractFirst {} // OK',
+                    '    abstract class Second {} // violation \'must match pattern\'',
+                    '    class AbstractThird {} // violation \'must be declared as \'abstract\'\'',
+                    '    abstract class GeneratorFifth {} // violation \'must match pattern\'',
+                    '}'
+                  ]
+                }
               ]
+            },
+            {
+              subtitle: 'Check: ClassDataAbstractionCoupling & ClassFanOutComplexity',
+              items: [
+                'These checks measure coupling. High coupling (depending on many other classes) is bad.',
+                'ClassDataAbstractionCoupling: Counts instantiations of other classes.',
+                'ClassFanOutComplexity: Counts all types a class relies on (imports, fields, etc.).',
+                'Aim for LOW coupling.'
+              ]
+            },
+            {
+              subtitle: 'Check: InterfaceIsType',
+              items: ['An interface should define a type (behavior) by having methods, not just be a holder for constants.'],
+              codeExamples: [
+                {
+                  title: 'InterfaceIsType Violation',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    '// violation, interfaces should describe a type and hence have methods.',
+                    'interface Test1 {',
+                    '    int a = 3;',
+                    '}'
+                  ]
+                }
+              ]
+            },
+            {
+              subtitle: 'Check: AvoidStarImport',
+              items: ['Avoid `import java.util.*;`. Be explicit about dependencies to reduce coupling and avoid name clashes.'],
+            },
+            {
+              subtitle: 'Check: MissingOverride',
+              items: ['Verifies that the `@Override` annotation is present when a method overrides a superclass method.'],
             }
           ]
         },
         {
-          title: 'Good Inheritance',
+          title: 'Member Functions & Class Internals',
           content: [
             {
-              subtitle: 'Guidelines',
-              items: [
-                'No Finalizer: Avoid finalize() method - use try-with-resources instead',
-                'No Redundant Array Init: Arrays automatically initialized with default values',
-                'No Clone: Avoid clone() unless necessary - consider copy constructors or factory methods'
-              ]
+              subtitle: 'Check: MissingCtor',
+              items: ['Checks that non-abstract classes define a constructor instead of relying on the default one.'],
+            },
+            {
+              subtitle: 'Check: OverloadedMethodsDeclarationOrder',
+              items: ['Checks that overloaded methods are grouped together in the source file.'],
+            },
+            {
+              subtitle: 'Check: InnerTypeLast',
+              items: ['Ensures nested classes/interfaces are declared at the bottom of the class for better readability.'],
             }
           ]
         }
@@ -129,58 +381,116 @@ export default function StudyNotes() {
       textColor: 'text-emerald-900',
       sections: [
         {
-          title: 'Valid Reasons to Create a Routine',
+          title: 'Reasons to Create a Routine',
           content: [
             {
-              subtitle: 'Key Reasons',
+              subtitle: 'Core Motivations',
               items: [
-                'Understandable Abstraction: Hide complex logic behind simple names',
-                'Avoid Duplicate Code: Follow DRY (Don\'t Repeat Yourself) principle',
-                'Support Subclassing: Allow for polymorphic behavior and extensibility',
-                'Improve Portability: Encapsulate non-portable aspects of code'
+                'Understandable Abstraction: Hide complex logic behind a simple, well-named routine.',
+                'Avoid Duplicate Code: Follow the DRY (Don\'t Repeat Yourself) principle.',
+                'Support Subclassing: Create methods that can be overridden by subclasses.',
+                'Improve Portability: Isolate non-portable code (OS/hardware dependencies) in one place.'
+              ],
+              codeExamples: [
+                {
+                  title: 'Abstraction Example',
+                  language: 'pseudocode',
+                  type: 'good',
+                  code: [
+                    '// Instead of this complex logic:',
+                    'if (node <> NULL) then',
+                    '  while (node.next <> NULL) do',
+                    '    node = node.next',
+                    '    leafName = node.name',
+                    '  end while',
+                    'else',
+                    '  leafName = ""',
+                    'end if',
+                    '',
+                    '// Use a simple, abstract routine:',
+                    'leafName = GetLeafName(node)'
+                  ]
+                }
               ]
             }
           ]
         },
         {
-          title: 'Design at Routine Level',
+          title: 'Cohesion in Routines',
           content: [
             {
-              subtitle: 'Cohesion Types',
+              subtitle: 'Types of Cohesion (Best to Worst)',
               items: [
-                'Functional Cohesion (Best): Performs one and only one operation',
-                'Sequential Cohesion: Operations in specific order, sharing data step to step',
-                'Communicational Cohesion: Make use of same data but not related otherwise',
-                'Temporal Cohesion: Grouped because they occur at same time',
-                'Logical Cohesion: Grouped by logical category (generally weak)'
+                'Functional Cohesion (Best): Performs one and only one operation.',
+                'Sequential Cohesion: Operations must be performed in a specific order, sharing data between steps.',
+                'Communicational Cohesion: Operations use the same data but are otherwise unrelated.',
+                'Temporal Cohesion: Operations are grouped because they happen at the same time (e.g., `startup()`).',
+                'Logical Cohesion (Worst): Operations are grouped into a grab-bag routine, and a flag decides which one to run.'
+              ]
+            },
+            {
+              subtitle: 'Pop Quizzes on Cohesion',
+              popQuizzes: [
+                {
+                  question: 'Does the following `printReport` routine have functional cohesion?',
+                  imageDescription: 'A diagram shows `dostuff(data)` calling `printReport(data)`. The implementation of `printReport(data)` then calls `doCalculation(stuffSummary(data))`. This means the print routine is also doing calculations.',
+                  answer: 'No. Because `printReport` was doing more than just printing. It was also performing a calculation, which violates the principle of functional cohesion. A better design would be to perform the calculation outside and pass the result to the print routine.'
+                },
+                {
+                  question: 'Is the following method communicationally cohesive?',
+                  imageDescription: 'A diagram shows `doStuff(birthDate)` calling `calculateRetirement(age, birthDate)`. The implementation of `calculateRetirement` calls `checkBirthdate(birthDate)` and `calculateStuff(age)`. The two operations use different data passed into the same routine.',
+                  answer: 'It could be better. It would be more communicationally cohesive if it only took `birthDate` as a parameter and calculated the age internally, since both operations ultimately derive from the birth date. This would make the routine operate on a more unified set of data.'
+                },
+                {
+                  question: 'How would the refactored `calculateRetirement` routine look if it were functionally cohesive?',
+                  imageDescription: 'The previous answer refactored `calculateRetirement` to take only `birthDate`. It then calls `checkBirthdate`, calculates age, and calls `calculateStuff`.',
+                  answer: 'To be truly functionally cohesive, it should be broken down further. The `calculateRetirement` routine could call two other routines: `checkBirthdate(birthDate)` and a new, more focused `calculateRetirementTime(birthDate)`. This separates the validation from the calculation.',
+                  answerImageDescription: 'A new diagram shows `calculateRetirement(birthDate)` calling `checkBirthdate(birthDate)` and `calculateRetirementTime(birthDate)`. The `calculateRetirementTime` routine then contains the age calculation and the final calculation.'
+                },
+                {
+                  question: 'Is the last design functionally cohesive enough?',
+                  imageDescription: 'The previous answer refactored `calculateRetirementTime` to calculate age internally.',
+                  answer: 'It is better, but to be ideal, the age calculation itself should be in its own functionally cohesive method, `calculateAge(birthDate)`. This makes the `calculateAge` routine highly reusable and focused on a single task.',
+                  answerImageDescription: 'The final diagram shows `calculateRetirementTime` calling a new `calculateAge(birthDate)` method instead of calculating it inline.'
+                }
               ]
             }
           ]
         },
         {
-          title: 'Routine Names',
+          title: 'Routine Naming and Parameters',
           content: [
             {
-              subtitle: 'Best Practices',
+              subtitle: 'Naming Best Practices',
               items: [
-                'Describe Everything the Routine Does: Include all outputs and side effects',
-                'Avoid Meaningless Verbs: Don\'t use Handle, Perform, Output, Process, DealWith',
-                'Don\'t Differentiate by Number: Avoid Part1, Part2, OutputUser1, OutputUser2',
-                'Use Description of Return Value: For functions returning values',
-                'Use Strong Verb + Object: PrintDocument(), CalcMonthlyRevenues()'
+                'Describe Everything the Routine Does: The name must be an honest summary of its behavior and ALL side effects.',
+                'Avoid Meaningless Verbs: Don\'t use vague words like `Handle`, `Perform`, `Process`. Be specific.',
+                'Use Strong Verb + Object: `PrintDocument()`, `CheckOrderInfo()`.',
+                'For functions, describe the return value: `printer.isReady()`, `customerId.next()`.',
+              ]
+            },
+            {
+              subtitle: 'Parameter Best Practices',
+              items: [
+                'Use All Parameters: If a parameter is passed, it must be used. If not, remove it.',
+                'Don\'t Use Parameters as Working Variables: Assign the parameter to a local variable and modify that instead. The `FinalParameters` Checkstyle rule helps enforce this.',
               ]
             }
           ]
         },
         {
-          title: 'Routine Parameters',
+          title: 'Checkstyle for Routines',
           content: [
             {
-              subtitle: 'Guidelines',
+              subtitle: 'Key Checks',
               items: [
-                'Use All Parameters: If passed to routine, must be used within it',
-                'Don\'t Use Parameters as Working Variables: Create local working variables instead',
-                'Make Parameters Final: Prevents accidental modification'
+                '`MethodName`: Enforces naming conventions (e.g., camelCase).',
+                '`MethodLength`: Restricts the number of lines in a method to encourage refactoring.',
+                '`FinalParameters`: Ensures parameters are marked `final`.',
+                '`ParameterNumber`: Limits the number of parameters a method can have.',
+                '`ReturnCount`: Restricts the number of `return` statements.',
+                '`RequireThis`: Enforces explicit use of `this` for instance members to avoid ambiguity.',
+                '`CovariantEquals`, `SuperClone`, `SuperFinalize`: Enforce correct implementation of core Java methods.'
               ]
             }
           ]
@@ -189,67 +499,157 @@ export default function StudyNotes() {
     },
     {
       id: 'week11',
-      title: 'Week 11: General Issues in Using Variables',
+      title: 'Week 11: Using Variables',
       color: 'from-purple-500 to-violet-500',
       bgColor: 'from-purple-50/80 to-violet-50/80',
       textColor: 'text-purple-900',
       sections: [
         {
-          title: 'Making Variable Declarations',
+          title: 'Variable Declarations & Initialization',
           content: [
             {
-              subtitle: 'Naming Conventions',
+              subtitle: 'Best Practices & Related Checks',
               items: [
-                'MemberName: Instance variables - camel case, lowercase start',
-                'LocalVariableName: Local non-final variables - camel case, lowercase start',
-                'StaticVariableName: Static non-final variables - camel case, lowercase start',
-                'LocalFinalVariableName: Local final variables - camel case, lowercase start',
-                'FinalLocalVariable: Local variables never changed should be declared final'
+                'Follow Naming Conventions: Use `MemberName`, `LocalVariableName`, `StaticVariableName`, `LocalFinalVariableName` to enforce consistent naming.',
+                'One Declaration Per Line: Avoid `int x, y;`. (See `MultipleVariableDeclarations` check).',
+                'Initialize Close to First Use: This minimizes the variable\'s "live time". (See `VariableDeclarationUsageDistance` check).',
+                'Avoid Redundant Initialization: Don\'t initialize to default values like `int x = 0;` or `Object o = null;`. (See `ExplicitInitialization` check).',
+                'Unchanged variables should be `final`. (See `FinalLocalVariable` check).'
+              ],
+              codeExamples: [
+                {
+                  title: 'Check: MultipleVariableDeclarations',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'int lower, higher; // violation',
+                    'int value,',
+                    '    index; // violation'
+                  ]
+                },
+                {
+                  title: 'Check: ExplicitInitialization',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'private int intField1 = 0; // violation',
+                    'private Obj objField1 = null; // violation'
+                  ]
+                }
               ]
             }
           ]
         },
         {
-          title: 'Guidelines for Initializing Variables',
-          content: [
-            {
-              subtitle: 'Best Practices',
-              items: [
-                'Initialize Each Variable as Declared: Assign value when declaring',
-                'Initialize Close to First Use: Declare variables near first usage',
-                'MultipleVariableDeclarations: Each variable on its own line',
-                'ExplicitInitialization: Avoid initializing to default values',
-                'Initialize Member Data in Constructor: Don\'t rely on default initialization'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Scope',
+          title: 'Scope and "Live Time"',
           content: [
             {
               subtitle: 'Minimizing Variable Scope',
               items: [
-                'Keep Variables "Live" for Short Time: Minimize statements between declaration and last use',
-                'Initialize Before Loop: Not at beginning of routine containing loop',
-                'Don\'t Modify Control Variables: Avoid changing for loop control variables',
-                'Minimize Declaration-Usage Distance: Declare close to first use',
-                'Group Related Statements: Keep related code together',
-                'Break into Separate Routines: Extract groups of related statements'
+                'Live Time: The total number of statements over which a variable is "live" (from its first to last use). A shorter live time is better.',
+                'Principle: Keep variables live for as short a time as possible by declaring them close to their first use.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Long Live Time (Average: 54)',
+                  language: 'pseudocode',
+                  type: 'bad',
+                  code: [
+                    '1  // initialize all variables at top of routine',
+                    '2  recordIndex = 0;',
+                    '3  total = 0;',
+                    '4  done = false;',
+                    '...',
+                    '28 // Last reference to recordIndex (Live Time: 27)',
+                    '...',
+                    '69 // Last reference to total (Live Time: 67)',
+                    '70 // Last reference to done (Live Time: 67)'
+                  ]
+                },
+                {
+                  title: 'Short Live Time (Average: 7)',
+                  language: 'pseudocode',
+                  type: 'good',
+                  code: [
+                    '...',
+                    '25 recordIndex = 0; // Declared right before use',
+                    '26 while(recordIndex < recordCount) {',
+                    '28   // Last reference to recordIndex (Live Time: 4)',
+                    '}',
+                    '...',
+                    '62 total = 0; // Declared right before use',
+                    '63 done = false;',
+                    '64 while(!done) {',
+                    '69   // Last reference to total (Live Time: 8)',
+                    '70   // Last reference to done (Live Time: 8)',
+                    '}'
+                  ]
+                }
+              ]
+            },
+            {
+              subtitle: 'Check: VariableDeclarationUsageDistance',
+              items: [
+                'This check enforces the principle of minimizing scope by flagging variables declared too far from their first use.'
+              ],
+              codeExamples: [
+                {
+                  title: 'Violation of Usage Distance',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'public void foo() {',
+                    '    int num; // violation, distance = 4',
+                    '    System.out.println("Statement 1");',
+                    '    System.out.println("Statement 2");',
+                    '    System.out.println("Statement 3");',
+                    '    num = 1;',
+                    '}'
+                  ]
+                }
               ]
             }
           ]
         },
         {
-          title: 'Using Each Variable for Exactly One Purpose',
+          title: 'One Purpose Per Variable',
           content: [
             {
-              subtitle: 'Variable Usage Guidelines',
+              subtitle: 'Avoid Reusing Variables',
               items: [
-                'One Purpose Only: Don\'t reuse variables for multiple unrelated purposes',
-                'Avoid Hidden Meanings: Variable value shouldn\'t change its purpose',
-                'Ensure All Variables Are Used: Remove unused declared variables',
-                'UnusedLocalVariable Check: Catches declared but unused local variables'
+                'Using a variable for multiple, unrelated purposes makes the code extremely difficult to understand and maintain.',
+                'Avoid "hidden meanings" where a variable\'s value changes its purpose (e.g., `pageCount = -1` means an error). Use separate status variables instead.',
+                'All declared variables must be used. (See `UnusedLocalVariable` check).'
+              ],
+              codeExamples: [
+                {
+                  title: 'Bad Practice: Reusing `temp`',
+                  language: 'cpp',
+                  type: 'bad',
+                  code: [
+                    '// temp is used for the discriminant',
+                    'temp = Sqrt( b*b - 4*a*c );',
+                    'root[0] = ( -b + temp ) / ( 2 * a );',
+                    '// ...',
+                    '// temp is reused for swapping',
+                    'temp = root[0];',
+                    'root[0] = root[1];',
+                    'root[1] = temp;'
+                  ]
+                },
+                {
+                  title: 'Good Practice: Separate Variables',
+                  language: 'cpp',
+                  type: 'good',
+                  code: [
+                    'discriminant = Sqrt( b*b - 4*a*c );',
+                    'root[0] = ( -b + discriminant ) / ( 2 * a );',
+                    '// ...',
+                    'oldRoot = root[0];',
+                    'root[0] = root[1];',
+                    'root[1] = oldRoot;'
+                  ]
+                }
               ]
             }
           ]
@@ -264,73 +664,153 @@ export default function StudyNotes() {
       textColor: 'text-orange-900',
       sections: [
         {
-          title: 'Selecting the Kind of Loop',
+          title: 'Loop Selection & Control',
           content: [
             {
-              subtitle: 'Loop Types',
+              subtitle: 'Choosing the Right Loop',
               items: [
-                'Counted Loop (for): When number of iterations is known in advance',
-                'Iterator Loop (for-each): Performs action once for each element in container',
-                'Continuously Evaluated Loop (while/do-while): Number of iterations not known beforehand',
-                'Endless Loop: Executes forever - used in OS, embedded systems, or with internal exit conditions'
+                'Don\'t abuse a `for` loop\'s structure for logic that fits better in a `while` loop.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Abusive `for` Loop',
+                  language: 'cpp',
+                  type: 'bad',
+                  code: [
+                    '// read all the records from a file',
+                    'for (inputFile.MoveToStart(), recordCount = 0;',
+                    '     !inputFile.EndOfFile();',
+                    '     recordCount++ ) {',
+                    '    inputFile.GetRecord();',
+                    '}'
+                  ]
+                },
+                {
+                  title: 'Appropriate `while` Loop',
+                  language: 'cpp',
+                  type: 'good',
+                  code: [
+                    'inputFile.MoveToStart();',
+                    'recordCount = 0;',
+                    'while (!inputFile.EndOfFile()) {',
+                    '    inputFile.GetRecord();',
+                    '    recordCount++;',
+                    '}'
+                  ]
+                }
+              ]
+            },
+            {
+              subtitle: 'Processing the Middle of the Loop',
+              items: [
+                'Always use braces `{}` to enclose loop statements (`NeedBraces`).',
+                'Avoid empty loops. If a loop is empty, it\'s often a bug or can be rewritten more clearly (`EmptyBlock`).'
+              ],
+              codeExamples: [
+                {
+                  title: 'Unclear Empty Loop',
+                  language: 'cpp',
+                  type: 'bad',
+                  code: [
+                    'while ( ( inputChar = dataFile.GetChar() ) != CharType_Eof ) { ;',
+                    '}'
+                  ]
+                },
+                {
+                  title: 'Clearer `do-while` Loop',
+                  language: 'cpp',
+                  type: 'good',
+                  code: [
+                    'do {',
+                    '    inputChar = dataFile.GetChar();',
+                    '} while (inputChar != CharType_Eof);'
+                  ]
+                }
               ]
             }
           ]
         },
         {
-          title: 'Controlling the Loop',
+          title: 'Loop Exits',
           content: [
             {
-              subtitle: 'Loop Control Placement',
+              subtitle: 'Check: ModifiedControlVariable',
               items: [
-                'Top (Pre-check): while loop - condition checked before loop body executes',
-                'Bottom (Post-check): do-while loop - loop body executes at least once',
-                'Middle (Loop-and-a-Half): while(true) with if condition and break inside',
-                'Advantages of Loop-and-a-Half: Reduces redundant code, simplifies complex exit conditions',
-                'Disadvantages: Can be less readable if exit point not immediately obvious'
+                'To terminate a `for` loop early, use a `break` statement. Directly manipulating the loop index is confusing and error-prone.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Bad Practice: Monkeying with Loop Index',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'for (int i = 0; i < 100; i++) {',
+                    '    if ( ... ) {',
+                    '        i = 100; // Here is the monkeying.',
+                    '    }',
+                    '}'
+                  ]
+                }
+              ]
+            },
+            {
+              subtitle: '`break` vs. Boolean Flags',
+              items: [
+                'Using `break` is often clearer and less error-prone than setting a boolean flag to control loop termination.'
+              ]
+            },
+            {
+              subtitle: 'Using `continue`',
+              items: [
+                '`continue` should be used sparingly, and preferably at the top of a loop to skip an iteration based on a simple condition. If the logic is complex, a nested `if` is usually clearer.'
               ]
             }
           ]
         },
         {
-          title: 'Exiting the Loop',
+          title: 'Loop Variables, Length, and Nesting',
           content: [
             {
-              subtitle: 'Exit Methods',
+              subtitle: 'Use Meaningful Names',
               items: [
-                'break statements: Exit from middle of loop',
-                'return: Exit both loop and routine',
-                'Error Handling: Use try-catch for exceptions without premature exit',
-                'Avoid goto: Generally discouraged due to unstructured control flow'
+                'Generic names like `i`, `j`, `k` are acceptable for short, simple loops, but descriptive names are better for nested or complex loops.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Bad Loop Variable Names',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'for ( int i = 0; i < numPayCodes; i++ ) {',
+                    '    for ( int j = 0; j < 12; j++ ) {',
+                    '        for ( int k = 0; k < numDivisions; k++ ) {',
+                    '            sum = sum + transaction[j][i][k];',
+                    '        }',
+                    '    }',
+                    '}'
+                  ]
+                },
+                {
+                  title: 'Good Loop Variable Names',
+                  language: 'java',
+                  type: 'good',
+                  code: [
+                    'for ( int payCodeIdx = 0; payCodeIdx < numPayCodes; payCodeIdx++ ) {',
+                    '    for (int month = 0; month < 12; month++ ) {',
+                    '        for ( int divisionIdx = 0; ... ) {',
+                    '            sum = sum + transaction[month][payCodeIdx][divisionIdx];',
+                    '        }',
+                    '    }',
+                    '}'
+                  ]
+                }
               ]
-            }
-          ]
-        },
-        {
-          title: 'Using Loop Variables',
-          content: [
+            },
             {
-              subtitle: 'Best Practices',
+              subtitle: 'Length and Nesting Guidelines',
               items: [
-                'Initialize Loop Variables: Initialize immediately before loop starts',
-                'Increment Loop Variables: As part of loop control (for loop update clause)',
-                'Use for One Purpose Only: Loop control variables should only control iteration',
-                'Watch for Off-by-One Errors: Carefully check boundary conditions (< vs <=)',
-                'Don\'t Modify Control Variable: Checkstyle ModifiedControlVariable prevents this'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Loop Length and Nesting',
-          content: [
-            {
-              subtitle: 'Guidelines',
-              items: [
-                'Keep Loops Short: Shorter loops are easier to understand and verify',
-                'Extract Long Loops: Break into separate routines if becoming very long',
-                'Avoid Deep Nesting: 4+ levels significantly reduce comprehension',
-                'Refactor Nested Loops: Consider separate, smaller routines for complex structures'
+                'Keep loops short enough to be viewed all at once.',
+                'Limit nesting to three levels. Deeper nesting becomes very hard to comprehend and should be refactored into separate routines.'
               ]
             }
           ]
@@ -345,51 +825,109 @@ export default function StudyNotes() {
       textColor: 'text-rose-900',
       sections: [
         {
-          title: 'Plain if-then Statements',
+          title: '`if-then-else` Statements',
           content: [
             {
-              subtitle: 'Best Practices',
+              subtitle: 'Handle the Normal Case First',
               items: [
-                'Write the Nominal Path First: Handle most common, expected scenario first',
-                'Make Sure You Branch Correctly on Equality: Pay attention to boundary conditions (<, <=, >, >=, ==)',
-                'Check Normal Case First in if: Prioritize most frequent condition in if block',
-                'Follow if Clause with Meaningful Statement: Action should be clear and related to condition'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Chains of if-then Statements',
-          content: [
-            {
-              subtitle: 'Ordering Strategies',
-              items: [
-                'Order by Frequency: Most likely to least likely conditions',
-                'Order by Alphabetical Order: When no clear frequency pattern',
-                'Order by Single Test: For mutually exclusive, specific value checks',
-                'Check Each Condition: Ensure all possible cases are covered',
-                'Correct Logic with else Clause: Handle all uncovered cases explicitly'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Switch Statements (case Statements)',
-          content: [
-            {
-              subtitle: 'Best Practices',
-              items: [
-                'Use for Mutually Exclusive Conditions: Single variable with distinct values',
-                'Always Include default Clause: For error detection, robustness, and documentation',
-                'Clearly Identify Fall-Throughs: Document intentional fall-through with comments',
-                'Use enum Types When Appropriate: More robust than integer constants or strings'
+                'Structure your code so the normal, most frequent path of execution is clear and not interrupted by nested error-handling.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Haphazard Error Handling',
+                  language: 'vb',
+                  type: 'bad',
+                  code: [
+                    'OpenFile( inputFile, status )',
+                    'If ( status = Status_Error ) Then',
+                    '    errorType = FileOpenError',
+                    'Else',
+                    '    ReadFile( inputFile, fileData, status )',
+                    '    If ( status = Status_Success ) Then ...',
+                    'End If'
+                  ]
+                },
+                {
+                  title: 'Systematic "Follow the Normal Path" Handling',
+                  language: 'vb',
+                  type: 'good',
+                  code: [
+                    'OpenFile( inputFile, status )',
+                    'If ( status = Status_Success ) Then',
+                    '    ReadFile( inputFile, fileData, status )',
+                    '    If ( status = Status_Success ) Then',
+                    '        // ... nominal path continues',
+                    '    Else',
+                    '        errorType = ErrorType_FileReadError',
+                    '    End If',
+                    'Else',
+                    '    errorType = ErrorType_FileOpenError',
+                    'End If'
+                  ]
+                }
               ]
             },
             {
-              subtitle: 'Checkstyle Rules',
+              subtitle: 'Simplify with Boolean Functions',
               items: [
-                'MissingSwitchDefault: Ensures switch statements have default clause',
-                'FallsThrough: Checks for unintentional fall-through in switch statements'
+                'Instead of long, complex boolean expressions in an `if` statement, encapsulate the logic in a well-named boolean function.'
+              ]
+            },
+            {
+              subtitle: 'Related Checkstyle Rules',
+              items: [
+                '`NestedIfDepth`: Restricts how deeply `if` statements can be nested.',
+                '`NeedBraces`: Enforces the use of `{}` for all conditional blocks.',
+                '`EmptyStatement`: Catches stray semicolons like `if (condition);`.',
+                '`SimplifyBooleanExpression`: Simplifies expressions like `if (b == true)`.',
+                '`SimplifyBooleanReturn`: Simplifies `if (c) return true; else return false;` to `return c;`.'
+              ]
+            }
+          ]
+        },
+        {
+          title: '`switch` Statements',
+          content: [
+            {
+              subtitle: 'Best Practices',
+              items: [
+                'Use for a single variable with many distinct, mutually exclusive values.',
+                'Order cases effectively: alphabetically, numerically, or by frequency.',
+                'Always include a `default` clause to handle unexpected cases. (`MissingSwitchDefault`)',
+                'The `default` clause should come last. (`DefaultComesLast`)',
+                'Clearly comment any intentional fall-throughs. (`FallsThrough`)'
+              ]
+            },
+            {
+              subtitle: 'Polymorphism vs. `switch`',
+              items: [
+                'Using a `switch` statement to perform different actions based on an object\'s type is often a sign that you should be using polymorphism instead.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Bad Practice: `switch` on Type',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    'switch (a.getType()) {',
+                    '    case CLASSA:',
+                    '        System.out.println("class a");',
+                    '        break;',
+                    '    case CLASSB:',
+                    '        System.out.println("class b");',
+                    '        break;',
+                    '}'
+                  ]
+                },
+                {
+                  title: 'Good Practice: Polymorphism',
+                  language: 'java',
+                  type: 'good',
+                  code: [
+                    '// Each class implements the doWork() method from an interface',
+                    'a.doWork(); // Java determines which implementation to call'
+                  ]
+                }
               ]
             }
           ]
@@ -404,88 +942,98 @@ export default function StudyNotes() {
       textColor: 'text-indigo-900',
       sections: [
         {
-          title: 'Barricade Your Program',
+          title: 'Barricades: Separating Clean and Dirty Data',
           content: [
             {
-              subtitle: 'Concept',
+              subtitle: 'The Concept',
               items: [
-                'Create "barricade" around parts dealing with "dirty" data',
-                'Dirty Data: External input (users, files, network) - potentially invalid',
-                'Clean Data: Validated and sanitized by barricade classes',
-                'Public Methods: Assume data is unsafe, validate and sanitize',
-                'Private Methods: Assume data is clean, simplifies logic and improves performance'
+                'A "barricade" is a boundary in your code that separates trusted ("clean") data from untrusted ("dirty") data.',
+                'Public methods form the barricade. They must validate and sanitize all external inputs.',
+                'Private methods exist inside the barricade and can assume the data they receive is clean and safe.'
+              ],
+              imageDescriptions: [
+                {
+                  description: 'A diagram shows external data sources (GUI, CLI, Files) as "dirty and untrusted". This data flows into "the barricade," which consists of validation classes. Data that passes through the barricade flows to the internal classes, which can assume the data is "clean and trusted".'
+                }
               ]
             }
           ]
         },
         {
-          title: 'Assertions',
+          title: 'Assertions vs. Exceptions',
           content: [
             {
-              subtitle: 'Purpose and Characteristics',
+              subtitle: 'Key Differences',
               items: [
-                'Catch Programming Errors: Detect bugs during development and testing',
-                'Document Assumptions: State programmer assumptions about program state',
-                'Development-Time Only: Compiled out of production code',
-                'NOT for User Input Validation: Use regular error handling instead',
-                'NOT for Recoverable Errors: Use for internal consistency checks only'
+                'Assertions: For development-time checks to catch programming errors (bugs). They check for conditions that should be IMPOSSIBLE if the code is correct. They are disabled in production.',
+                'Exceptions: For handling errors that can occur at runtime, even with correct code (e.g., file not found). They are part of the program\'s normal error-handling flow.',
+                'An assertion failure means there is a bug in the code. An exception means an external condition or user action caused an error that the program might be able to recover from.'
               ]
             },
             {
-              subtitle: 'Correct Usage',
+              subtitle: 'Using Assertions for Preconditions and Postconditions',
               items: [
-                'Preconditions: Check conditions true at method beginning',
-                'Postconditions: Check conditions true at method end',
-                'Parameter/Return Value Validation: For values that should be valid by definition',
-                'Never Put Executable Code in Assertions: Only check conditions, no side effects'
+                'Assertions are an excellent way to document and verify the "contract" of a routine.'
+              ],
+              codeExamples: [
+                {
+                  title: 'Documenting Pre/Postconditions with Assertions',
+                  language: 'vb',
+                  type: 'good',
+                  code: [
+                    'Private Function CalculateVelocity(...)',
+                    '    \' Preconditions',
+                    '    Debug.Assert ( -90 <= latitude And latitude <= 90 )',
+                    '    Debug.Assert ( 0 <= longitude And longitude < 360 )',
+                    '    ...',
+                    '    \' Postconditions',
+                    '    Debug.Assert ( 0 <= returnVelocity And returnVelocity <= 600 )',
+                    'End Function'
+                  ]
+                }
+              ]
+            },
+            {
+              subtitle: 'CRITICAL: Do NOT Put Executable Code in Assertions',
+              items: [
+                'Code inside an `assert` statement will not run in production, leading to critical bugs if it has side effects.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Dangerous Use of Assertion',
+                  language: 'vb',
+                  type: 'bad',
+                  code: [
+                    'Debug.Assert( PerformAction() ) \' This call disappears in production!'
+                  ]
+                },
+                {
+                  title: 'Safe Use of Assertion',
+                  language: 'vb',
+                  type: 'good',
+                  code: [
+                    'actionPerformed = PerformAction()',
+                    'Debug.Assert( actionPerformed ) \' Checks the result without side effects'
+                  ]
+                }
               ]
             }
           ]
         },
         {
-          title: 'Exceptions',
-          content: [
-            {
-              subtitle: 'When to Use',
-              items: [
-                'For errors that cannot be handled locally',
-                'For truly "exceptional" conditions (not normal operation)',
-                'When error occurs at different level than handling'
-              ]
-            },
-            {
-              subtitle: 'Alternatives',
-              items: [
-                'Return Neutral Value: null, empty string, 0, -1',
-                'Return Error Code: Specific code indicating error type',
-                'Change Return to Boolean: For simple success/failure',
-                'Die (Crash): For severe, unrecoverable errors'
-              ]
-            },
-            {
-              subtitle: 'When NOT to Use',
-              items: [
-                'For Normal Flow Control: Don\'t replace if-then-else',
-                'For User Input Validation: Handle with conditionals and prompts'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Error Handling Techniques',
-          content: [
-            {
-              subtitle: 'Best Practices',
-              items: [
-                'Determine How to Handle Errors: Develop strategy for each error type',
-                'Handle Errors Only Once: Detect low, handle high',
-                'Report Errors, Don\'t Suppress: Make errors visible',
-                'Log Errors Appropriately: Use logging frameworks with context',
-                'Centralize Error Handling: Standardize error reporting and recovery',
-                'Consider Clean vs. Dirty Data: Continuously apply barricade principle'
-              ]
-            }
-          ]
+            title: 'Exception Handling',
+            content: [
+                {
+                    subtitle: 'Best Practices',
+                    items: [
+                        'Throw an exception only for conditions that are truly exceptional, not for normal control flow.',
+                        'Avoid throwing exceptions in constructors and destructors, as it can lead to resource leaks in some languages (like C++).',
+                        'Throw exceptions at the right level of abstraction. A business object `Employee` should throw `EmployeeDataNotAvailable`, not a low-level `EOFException`.',
+                        'Include all relevant information in the exception message to aid in debugging.',
+                        'Avoid empty `catch` blocks. At a minimum, log the exception.'
+                    ]
+                }
+            ]
         }
       ]
     },
@@ -497,82 +1045,101 @@ export default function StudyNotes() {
       textColor: 'text-cyan-900',
       sections: [
         {
-          title: 'General Considerations',
+          title: 'Replacing Logic with Tables',
           content: [
             {
-              subtitle: 'Benefits',
+              subtitle: 'Benefit: Simplicity and Maintainability',
               items: [
-                'Simpler than Complicated Logic: Replace intricate if-then-else with data lookup',
-                'Easier to Modify: Update data in table rather than program logic',
-                'More Efficient: Can be faster in compute time or memory usage'
+                'Complex conditional logic can often be replaced by a simple data lookup, making the code cleaner and easier to update.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Complicated Logic',
+                  language: 'java',
+                  type: 'bad',
+                  code: [
+                    "if ((( 'a' <= inputChar ) && ( inputChar <= 'z' )) || ... ) {",
+                    "    charType = CharacterType.Letter;",
+                    "} else if (( inputChar == '.' ) || ... ) {",
+                    "    charType = CharacterType.Punctuation;",
+                    "}"
+                  ]
+                },
+                {
+                  title: 'Lookup Table (Direct Access)',
+                  language: 'java',
+                  type: 'good',
+                  code: [
+                    '// Assuming charTypeTable is pre-filled',
+                    'charType = charTypeTable[ inputChar ];'
+                  ]
+                }
               ]
             }
           ]
         },
         {
-          title: 'Direct Access Tables',
+          title: 'Types of Table Access',
           content: [
             {
-              subtitle: 'Concept',
+              subtitle: 'Direct Access',
               items: [
-                'Use input value directly as index into array/data structure',
-                'Example: charTypeTable[97] for character \'a\' (ASCII 97)'
+                'Use the input value directly as an index. Fastest method (O(1)).',
+                'Best for small, dense, contiguous input ranges (e.g., months 1-12).',
+                'Wastes memory if the range is large and sparse.'
+              ],
+              codeExamples: [
+                {
+                  title: 'Direct Access for Days in Month',
+                  language: 'vb',
+                  type: 'good',
+                  code: [
+                    'Dim daysPerMonth() As Integer = { 31, 28, 31, ... }',
+                    'days = daysPerMonth( month - 1 )'
+                  ]
+                }
               ]
             },
             {
-              subtitle: 'Trade-offs',
+              subtitle: 'Indexed Access',
               items: [
-                'Advantages: Very fast lookup (O(1) complexity)',
-                'Disadvantages: Can use lots of memory if input range is large and sparse',
-                'Requires: Input values in contiguous, manageable range'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Indexed Access Tables',
-          content: [
-            {
-              subtitle: 'Concept',
-              items: [
-                'Map range of inputs to an index rather than using input directly',
-                'Example: charTypeTable[charToIndexMap[inputChar]]',
-                'Handle non-contiguous or large input values'
+                'Use an intermediate index to map a sparse input range to a smaller, dense data table.',
+                'More memory-efficient for sparse data than direct access.',
+                'Requires an extra lookup step.'
+              ],
+              imageDescriptions: [
+                {
+                  description: 'A diagram shows a large, mostly empty array of indexes. A few entries in this array point to a smaller, dense lookup table. This illustrates how a large, sparse input range can be mapped to a compact data table.'
+                }
               ]
             },
             {
-              subtitle: 'Trade-offs',
+              subtitle: 'Stair-Step Access',
               items: [
-                'Advantages: More memory-efficient for sparse input ranges',
-                'Disadvantages: Extra lookup step to determine index'
-              ]
-            }
-          ]
-        },
-        {
-          title: 'Stair-Step Access Tables',
-          content: [
-            {
-              subtitle: 'Concept',
-              items: [
-                'Table entries valid for ranges of data rather than distinct points',
-                'Iterate through table until input falls within defined range',
-                'Example: Grading program with grade ranges (>=90%: A, <90% but >=75%: B, etc.)'
-              ]
-            },
-            {
-              subtitle: 'Implementation',
-              items: [
-                'Two arrays: rangeLimit and corresponding values',
-                'Loop through rangeLimit until condition met',
-                'Sequential searching required'
-              ]
-            },
-            {
-              subtitle: 'Trade-offs',
-              items: [
-                'Advantages: Handles continuous/range-based inputs efficiently',
-                'Disadvantages: Sequential search (O(N)) - not as fast as direct access'
+                'Used when a value corresponds to a range of inputs (e.g., grading, tax brackets).',
+                'Involves searching through an array of range boundaries.',
+                'Typically uses a sequential search (O(N)), which is slower than direct access. Can be optimized with a binary search.',
+                'Endpoints are critical: be careful with `<` vs. `<=`.',
+              ],
+              codeExamples: [
+                {
+                  title: 'Stair-Step Table for Grading',
+                  language: 'vb',
+                  type: 'good',
+                  code: [
+                    'Dim rangeLimit() As Double = { 50.0, 65.0, 75.0, 90.0, 100.0 }',
+                    'Dim grade() As String = { "F", "D", "C", "B", "A" }',
+                    '...',
+                    'gradeLevel = 0',
+                    'studentGrade = "A"',
+                    'While ( ( studentGrade = "A") and ( gradeLevel < maxGradeLevel ) )',
+                    '    If ( studentScore < rangeLimit( gradeLevel ) ) Then',
+                    '        studentGrade = grade( gradeLevel )',
+                    '    End If',
+                    '    gradeLevel = gradeLevel + 1',
+                    'Wend'
+                  ]
+                }
               ]
             }
           ]
@@ -592,7 +1159,7 @@ export default function StudyNotes() {
               <div className="flex items-center space-x-4">
                 <Link
                   href="/"
-                  className="nav-link text-slate-600 hover:text-slate-800"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
                 >
                   <ArrowLeftIcon className="h-5 w-5 mr-2" />
                   Back to Hub
@@ -631,6 +1198,9 @@ export default function StudyNotes() {
                 onClick={() => {
                   const element = document.getElementById(week.id);
                   element?.scrollIntoView({ behavior: 'smooth' });
+                  if (!expandedSections.includes(week.id)) {
+                    toggleSection(week.id);
+                  }
                 }}
                 className="px-4 py-2 text-sm font-medium bg-white/60 hover:bg-white/80 text-slate-700 rounded-xl transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
               >
@@ -645,7 +1215,7 @@ export default function StudyNotes() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-8">
           {weeklyContent.map((week) => (
-            <div key={week.id} id={week.id} className="study-card">
+            <div key={week.id} id={week.id} className="study-card scroll-mt-24">
               <div className="p-8 border-b border-slate-200/60">
                 <button
                   onClick={() => toggleSection(week.id)}
@@ -688,14 +1258,25 @@ export default function StudyNotes() {
                                 <LightBulbIcon className="h-6 w-6 mr-3" />
                                 {contentBlock.subtitle}
                               </h4>
-                              <ul className="space-y-3">
-                                {contentBlock.items.map((item, itemIndex) => (
-                                  <li key={itemIndex} className="flex items-start group">
-                                    <CheckCircleIcon className="h-5 w-5 mr-4 mt-1 text-emerald-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
-                                    <span className="text-slate-700 leading-relaxed">{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                              {contentBlock.items && (
+                                <ul className="space-y-3">
+                                  {contentBlock.items.map((item, itemIndex) => (
+                                    <li key={itemIndex} className="flex items-start group">
+                                      <CheckCircleIcon className="h-5 w-5 mr-4 mt-1 text-emerald-500 flex-shrink-0 group-hover:scale-110 transition-transform duration-200" />
+                                      <span className="text-slate-700 leading-relaxed">{item}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              )}
+                              {contentBlock.imageDescriptions && contentBlock.imageDescriptions.map((desc: ImageDescription, descIndex: number) => (
+                                <ImageDescriptionBlock key={descIndex} description={desc.description} />
+                              ))}
+                              {contentBlock.codeExamples && contentBlock.codeExamples.map((ex: CodeExample, exIndex: number) => (
+                                <CodeBlock key={exIndex} title={ex.title} code={ex.code} language={ex.language} type={ex.type as 'good' | 'bad' | 'neutral'} />
+                              ))}
+                              {contentBlock.popQuizzes && contentBlock.popQuizzes.map((quiz: PopQuiz, quizIndex: number) => (
+                                <PopQuizBlock key={quizIndex} question={quiz.question} answer={quiz.answer} imageDescription={quiz.imageDescription} answerImageDescription={quiz.answerImageDescription} />
+                              ))}
                             </div>
                           ))}
                         </div>
@@ -723,19 +1304,19 @@ export default function StudyNotes() {
               <ul className="space-y-3">
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Understand WHY each Checkstyle rule exists (readability, maintainability, preventing errors)</span>
+                  <span className="text-slate-700">Understand WHY each Checkstyle rule exists (readability, maintainability, preventing errors).</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Know common violations and correct usage examples for key rules</span>
+                  <span className="text-slate-700">Know common violations and correct usage examples for key rules.</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Master the principles: LSP, Law of Demeter, cohesion types</span>
+                  <span className="text-slate-700">Master the principles: LSP, Law of Demeter, Cohesion types.</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Understand defensive programming concepts: assertions vs exceptions</span>
+                  <span className="text-slate-700">Understand defensive programming concepts: Assertions vs. Exceptions.</span>
                 </li>
               </ul>
             </div>
@@ -747,19 +1328,19 @@ export default function StudyNotes() {
               <ul className="space-y-3">
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Method naming: Strong verb + object, describe return value and side effects</span>
+                  <span className="text-slate-700">Method naming: Strong verb + object, describe return value and side effects.</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Variable scope: Keep "live time" short, declare close to first use</span>
+                  <span className="text-slate-700">Variable scope: Keep "live time" short, declare close to first use.</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Loop control: Don't modify control variables, watch for off-by-one errors</span>
+                  <span className="text-slate-700">Loop control: Don't modify control variables, watch for off-by-one errors.</span>
                 </li>
                 <li className="flex items-start group">
                   <div className="w-3 h-3 bg-indigo-500 rounded-full mt-2 mr-4 flex-shrink-0 group-hover:scale-125 transition-transform duration-200"></div>
-                  <span className="text-slate-700">Table-driven methods: Direct vs Indexed vs Stair-step access patterns</span>
+                  <span className="text-slate-700">Table-driven methods: Know the trade-offs of Direct vs. Indexed vs. Stair-step access.</span>
                 </li>
               </ul>
             </div>
@@ -782,4 +1363,4 @@ export default function StudyNotes() {
       </footer>
     </div>
   );
-} 
+}

@@ -36,7 +36,7 @@ export default function Home() {
       icon: CodeBracketIcon,
       gradient: 'from-purple-500 to-pink-500',
       bgGradient: 'from-purple-50 to-pink-50',
-      weeks: '33+ Rules',
+      weeks: '40+ Rules',
       topics: ['Class-Level Checks', 'Method-Level Checks', 'Variable Checks', 'Control Flow', 'Java-Specific']
     },
     {
@@ -53,19 +53,19 @@ export default function Home() {
 
   const weeklyTopics = [
     { week: 9, title: 'Working Classes', color: 'bg-gradient-to-r from-blue-500 to-blue-600', topics: ['ADTs', 'LSP', 'Law of Demeter', 'Encapsulation'] },
-    { week: 10, title: 'High Quality Routines', color: 'bg-gradient-to-r from-emerald-500 to-emerald-600', topics: ['Cohesion', 'Naming', 'Parameters'] },
-    { week: 11, title: 'Using Variables', color: 'bg-gradient-to-r from-purple-500 to-purple-600', topics: ['Declarations', 'Scope', 'Initialization'] },
+    { week: 10, title: 'High Quality Routines', color: 'bg-gradient-to-r from-emerald-500 to-emerald-600', topics: ['Cohesion', 'Naming', 'Parameters', 'Checkstyle'] },
+    { week: 11, title: 'Using Variables', color: 'bg-gradient-to-r from-purple-500 to-purple-600', topics: ['Declarations', 'Scope', 'Initialization', 'Live Time'] },
     { week: 12, title: 'Controlling Loops', color: 'bg-gradient-to-r from-orange-500 to-orange-600', topics: ['Loop Types', 'Control Variables', 'Exit Conditions'] },
-    { week: '13-1', title: 'Using Conditionals', color: 'bg-gradient-to-r from-rose-500 to-rose-600', topics: ['if-then', 'switch Statements', 'Best Practices'] },
-    { week: '13-2', title: 'Defensive Programming', color: 'bg-gradient-to-r from-indigo-500 to-indigo-600', topics: ['Assertions', 'Exceptions', 'Error Handling'] },
+    { week: '13-1', title: 'Using Conditionals', color: 'bg-gradient-to-r from-rose-500 to-rose-600', topics: ['if-then', 'switch Statements', 'Boolean Logic'] },
+    { week: '13-2', title: 'Defensive Programming', color: 'bg-gradient-to-r from-indigo-500 to-indigo-600', topics: ['Barricades', 'Assertions', 'Exceptions', 'Error Handling'] },
     { week: 14, title: 'Table-Driven Methods', color: 'bg-gradient-to-r from-cyan-500 to-cyan-600', topics: ['Direct Access', 'Indexed Access', 'Stair-step Access'] }
   ];
 
   const stats = [
-    { label: 'Study Weeks', value: '6', icon: ClockIcon },
-    { label: 'Checkstyle Rules', value: '33+', icon: CheckCircleIcon },
+    { label: 'Study Weeks', value: '7', icon: ClockIcon },
+    { label: 'Checkstyle Rules', value: '40+', icon: CheckCircleIcon },
     { label: 'Core Concepts', value: '50+', icon: BeakerIcon },
-    { label: 'Code Examples', value: '100+', icon: DocumentTextIcon }
+    { label: 'Code Examples', value: '150+', icon: DocumentTextIcon }
   ];
 
   return (

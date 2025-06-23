@@ -13,7 +13,8 @@ import {
   BeakerIcon,
   CpuChipIcon,
   XMarkIcon,
-  LightBulbIcon
+  LightBulbIcon,
+  PaintBrushIcon
 } from '@heroicons/react/24/outline';
 
 export default function CheckstyleReference() {
@@ -32,52 +33,186 @@ export default function CheckstyleReference() {
       rules: [
         {
           name: 'VisibilityModifier',
-          whereUsed: 'Class (Fields)',
+          whereUsed: 'Class Members',
           whatItChecks: 'Ensures proper visibility of class members. By default, fields should be private. Only static final or truly immutable fields may be public.',
           whyItMatters: 'Enforces good encapsulation; hides implementation details; reduces external dependencies.',
           commonViolations: [
-            'public int num1; // non-final public field',
-            'protected String field2; // protected field often disallowed'
+            'int field1; // violation, must have a visibility modifier',
+            'protected String field2; // violation, protected not allowed by default',
+            'public int field3 = 42; // violation, not final'
           ],
           correctUsage: [
-            'private int num1; // proper private field',
-            'public static final int CONSTANT = 5; // acceptable public constant'
+            'private int myPrivateField1;',
+            'public static final int CONSTANT = 42;'
           ]
         },
         {
           name: 'FinalClass',
           whereUsed: 'Class Declaration',
-          whatItChecks: 'Ensures utility classes (classes with only static methods) are declared final.',
-          whyItMatters: 'Prevents unnecessary inheritance of utility classes; signals design intent.',
+          whatItChecks: 'Ensures that classes that can be effectively final are marked as such (e.g., classes with only private constructors).',
+          whyItMatters: 'Prevents unnecessary or unsafe subclassing; signals design intent.',
           commonViolations: [
-            'public class MathUtils { // should be final',
-            '  public static int add(int a, int b) { return a + b; }',
+            'class B { // violation, should be final',
+            '  private B() {}',
             '}'
           ],
           correctUsage: [
-            'public final class MathUtils {',
-            '  private MathUtils() {} // private constructor',
-            '  public static int add(int a, int b) { return a + b; }',
+            'final class A { // OK',
+            '  private A() {}',
             '}'
           ]
         },
         {
           name: 'HideUtilityClassConstructor',
           whereUsed: 'Utility Classes',
-          whatItChecks: 'Utility classes should have private constructors to prevent instantiation.',
-          whyItMatters: 'Prevents meaningless instantiation; saves memory; clarifies design intent.',
+          whatItChecks: 'Utility classes (those with only static members) should have a private constructor to prevent instantiation.',
+          whyItMatters: 'Prevents meaningless instantiation; clarifies design intent.',
           commonViolations: [
-            'public class StringUtils {',
-            '  // no constructor - default public constructor available',
-            '  public static boolean isEmpty(String s) { ... }',
+            'class Test { // violation, only has static method',
+            '  public Test() {}',
+            '  public static void fun() {}',
             '}'
           ],
           correctUsage: [
-            'public final class StringUtils {',
-            '  private StringUtils() { // private constructor',
-            '    throw new UnsupportedOperationException();',
+            'class Foo { // OK',
+            '  private Foo() {}',
+            '  static int n;',
+            '}'
+          ]
+        },
+        {
+          name: 'DesignForExtension',
+          whereUsed: 'Class Methods',
+          whatItChecks: 'Checks that overridable methods in non-final classes are either abstract or have an empty implementation (hook).',
+          whyItMatters: 'Protects superclasses from being broken by subclasses and forces a clear extension contract.',
+          commonViolations: [
+            'public abstract class Plant {',
+            '  // violation, overridable method has implementation',
+            '  protected void validate() {',
+            '    if (roots == null) throw new ...;',
             '  }',
-            '  public static boolean isEmpty(String s) { ... }',
+            '}'
+          ],
+          correctUsage: [
+            'public abstract class Plant {',
+            '  private void validate() {',
+            '    // ... main logic',
+            '    validateEx(); // call to hook',
+            '  }',
+            '  protected void validateEx() {} // empty hook for subclass',
+            '}'
+          ]
+        },
+        {
+          name: 'AbstractClassName',
+          whereUsed: 'Abstract Class Declaration',
+          whatItChecks: 'Ensures abstract class names conform to a pattern, typically starting with "Abstract".',
+          whyItMatters: 'Improves readability by making abstract base classes easily identifiable.',
+          commonViolations: [
+            'abstract class Second {} // violation, name does not match pattern'
+          ],
+          correctUsage: [
+            'abstract class AbstractFirst {}'
+          ]
+        },
+        {
+          name: 'InterfaceIsType',
+          whereUsed: 'Interface Declaration',
+          whatItChecks: 'Ensures an interface defines a type by having methods, not just constants.',
+          whyItMatters: 'Follows the principle that interfaces should define behavior (types), not just be constant holders.',
+          commonViolations: [
+            '// violation, no methods',
+            'interface Test1 {',
+            '  int a = 3;',
+            '}'
+          ],
+          correctUsage: [
+            'interface Test3 { // ok, has a method',
+            '  int a = 3;',
+            '  void test();',
+            '}'
+          ]
+        },
+        {
+          name: 'ClassDataAbstractionCoupling',
+          whereUsed: 'Class Body',
+          whatItChecks: 'Measures the number of other classes instantiated within a given class, indicating coupling.',
+          whyItMatters: 'High coupling makes a class harder to maintain and test, as it depends on many other types.',
+          commonViolations: [
+            'public class Test { // Violation if max=3',
+            '  A a1 = new A1();',
+            '  A a2 = new A2();',
+            '  B b1 = new B();',
+            '  C c1 = new C(); // 4th type',
+            '}'
+          ],
+          correctUsage: [
+            'public class Test { // OK if max=3',
+            '  A a1 = new A1();',
+            '  A a2 = new A2();',
+            '  B b1 = new B();',
+            '}'
+          ]
+        },
+        {
+          name: 'ClassFanOutComplexity',
+          whereUsed: 'Class Dependencies',
+          whatItChecks: 'Counts the number of other types a class relies on (imports, fields, etc.).',
+          whyItMatters: 'High fan-out indicates high coupling, making the class brittle and hard to maintain.',
+          commonViolations: [
+            '// Class that imports and uses many different types',
+            '// from various packages, exceeding the configured max (e.g., 20).'
+          ],
+          correctUsage: [
+            '// Class with a limited, focused set of dependencies.'
+          ]
+        },
+        {
+          name: 'AvoidStarImport',
+          whereUsed: 'Import Statements',
+          whatItChecks: 'Checks that there are no import statements that use the `*` notation.',
+          whyItMatters: 'Star imports can pull in unexpected classes, lead to naming conflicts, and obscure dependencies.',
+          commonViolations: [
+            'import java.util.*; // violation'
+          ],
+          correctUsage: [
+            'import java.util.List;',
+            'import java.util.ArrayList;'
+          ]
+        },
+        {
+          name: 'MissingCtor',
+          whereUsed: 'Class Declaration',
+          whatItChecks: 'Checks that non-abstract classes define a constructor instead of relying on the default one.',
+          whyItMatters: 'Ensures that object creation is an explicit, considered action.',
+          commonViolations: [
+            'class InvalidExample { // violation',
+            '  public void test() {}',
+            '}'
+          ],
+          correctUsage: [
+            'class ExampleOk {',
+            '  ExampleOk(int a) { ... }',
+            '}'
+          ]
+        },
+        {
+          name: 'InnerTypeLast',
+          whereUsed: 'Class Body',
+          whatItChecks: 'Ensures nested classes/interfaces are declared at the bottom of the class.',
+          whyItMatters: 'Improves readability by placing primary class members (fields, constructors, methods) first.',
+          commonViolations: [
+            'class Test1 {',
+            '  private String s;',
+            '  class InnerTest1 {}',
+            '  public void test() { } // violation, method after inner class',
+            '}'
+          ],
+          correctUsage: [
+            'class Example1 {',
+            '  private String s;',
+            '  public void test() {}',
+            '  class InnerTest1 {}',
             '}'
           ]
         }
@@ -93,68 +228,128 @@ export default function CheckstyleReference() {
       icon: CodeBracketIcon,
       rules: [
         {
-          name: 'MissingOverride',
-          whereUsed: 'Method Declarations',
-          whatItChecks: 'Methods that override superclass methods should have @Override annotation.',
-          whyItMatters: 'Prevents errors from typos in method names; documents intent; enables compiler checking.',
-          commonViolations: [
-            'public boolean equals(Object obj) { // missing @Override',
-            '  return super.equals(obj);',
-            '}'
-          ],
-          correctUsage: [
-            '@Override',
-            'public boolean equals(Object obj) {',
-            '  return super.equals(obj);',
-            '}'
-          ]
-        },
-        {
           name: 'MethodName',
           whereUsed: 'Method Declarations',
-          whatItChecks: 'Method names should follow camelCase convention.',
+          whatItChecks: 'Method names should follow camelCase convention, starting with a lowercase letter.',
           whyItMatters: 'Consistency in naming improves readability; follows Java conventions.',
           commonViolations: [
-            'public void Calculate_Total() { ... } // underscore not allowed',
-            'public void SHOWTOTAL() { ... } // all caps not allowed'
+            'public void Method3() {} // violation, starts with uppercase'
           ],
           correctUsage: [
-            'public void calculateTotal() { ... } // proper camelCase',
-            'public void showTotal() { ... } // proper camelCase'
+            'public void method1() {}'
           ]
         },
         {
           name: 'MethodLength',
           whereUsed: 'Method Body',
-          whatItChecks: 'Methods should not exceed a maximum number of lines (typically 150).',
-          whyItMatters: 'Long methods are harder to understand, test, and maintain; encourages good design.',
+          whatItChecks: 'Methods should not exceed a maximum number of lines (e.g., 4 lines in example).',
+          whyItMatters: 'Long methods are harder to understand, test, and maintain; encourages refactoring.',
           commonViolations: [
-            '// Method with 200+ lines of code',
-            'public void processData() {',
-            '  // ... 200 lines of complex logic',
+            'public void firstMethod() { // violation if max=4',
+            '  int index = 0;',
+            '  if (index < 5) {',
+            '    index++;',
+            '  }',
             '}'
           ],
           correctUsage: [
-            'public void processData() {',
-            '  validateInput();',
-            '  transformData();',
-            '  saveResults();',
-            '} // Each helper method < 150 lines'
+            'public void secondMethod() { // ok if max=4',
+            '  System.out.println("line 3");',
+            '}'
           ]
         },
         {
           name: 'FinalParameters',
           whereUsed: 'Method Parameters',
-          whatItChecks: 'Method parameters should be declared final to prevent modification.',
-          whyItMatters: 'Prevents accidental parameter modification; improves code clarity.',
+          whatItChecks: 'Method, constructor, and catch block parameters should be declared final.',
+          whyItMatters: 'Prevents accidental parameter modification (which is bad practice) and improves code clarity.',
           commonViolations: [
-            'public void process(String data) {',
-            '  data = data.trim(); // modifying parameter',
+            'public void methodTwo(int x) { } // violation, x should be final'
+          ],
+          correctUsage: [
+            'public void methodOne(final int x) { }'
+          ]
+        },
+        {
+          name: 'ParameterNumber',
+          whereUsed: 'Method & Constructor Declaration',
+          whatItChecks: 'Checks for a maximum number of parameters (default is 7).',
+          whyItMatters: 'Methods with too many parameters can be a sign of poor cohesion and are hard to use. Consider parameter objects.',
+          commonViolations: [
+            '// violation, more than 7 parameters',
+            'public void needsLotsOfParameters(int a,',
+            '  int b, int c, int d, int e, int f, int g, int h) { ... }'
+          ],
+          correctUsage: [
+            '// Use a parameter object for numerous parameters'
+          ]
+        },
+        {
+          name: 'MethodTypeParameterName',
+          whereUsed: 'Generic Method Declaration',
+          whatItChecks: 'Ensures generic type parameter names conform to a pattern (usually a single uppercase letter).',
+          whyItMatters: 'Follows standard Java conventions for generics, improving readability.',
+          commonViolations: [
+            'public <a> void method2() {} // violation, should be uppercase'
+          ],
+          correctUsage: [
+            'public <T> void method1() {}',
+            'public <K, V> void method3() {}'
+          ]
+        },
+        {
+          name: 'OverloadedMethodsDeclarationOrder',
+          whereUsed: 'Class Body',
+          whatItChecks: 'Checks that overloaded methods are grouped together in the source file.',
+          whyItMatters: 'Improves readability by keeping related methods physically close.',
+          commonViolations: [
+            'public void foo(int i) {}',
+            'public void notFoo() {} // violation, separates overloads',
+            'public void foo(String s) {}'
+          ],
+          correctUsage: [
+            'public void foo(int i) {}',
+            'public void foo(String s) {}',
+            'public void notFoo() {}'
+          ]
+        },
+        {
+          name: 'ReturnCount',
+          whereUsed: 'Method Body',
+          whatItChecks: 'Restricts the number of return statements in a method.',
+          whyItMatters: 'Promotes single-exit-point design, which can sometimes be easier to reason about and debug.',
+          commonViolations: [
+            '// violation if max is 2',
+            'public int badSign(int x) {',
+            '  if (x < -2) return -2;',
+            '  if (x == 0) return 0;',
+            '  if (x > 2) return 2;',
+            '  return 1;',
             '}'
           ],
           correctUsage: [
-            'public void process(final String data) {',
-            '  String trimmed = data.trim(); // use local variable',
+            '// OK if max is 3',
+            'public int sign(int x) {',
+            '  if (x < 0) return -1;',
+            '  if (x == 0) return 1;',
+            '  return 0;',
+            '}'
+          ]
+        },
+        {
+          name: 'RequireThis',
+          whereUsed: 'Method Body',
+          whatItChecks: 'Checks that references to instance variables and methods use `this.` explicitly.',
+          whyItMatters: 'Avoids ambiguity, especially when local variables or parameters shadow instance fields.',
+          commonViolations: [
+            'public void foo(int c) {',
+            '  // c is a parameter, this.c is the field',
+            '  c = c; // violation, ambiguous assignment',
+            '}'
+          ],
+          correctUsage: [
+            'public Test(int a) {',
+            '  this.a = a; // OK, this keyword used',
             '}'
           ]
         }
@@ -172,15 +367,13 @@ export default function CheckstyleReference() {
         {
           name: 'MemberName',
           whereUsed: 'Instance Variables',
-          whatItChecks: 'Instance variable names should follow camelCase convention.',
+          whatItChecks: 'Instance variable names should follow camelCase, starting with a lowercase letter.',
           whyItMatters: 'Consistent naming improves code readability and maintainability.',
           commonViolations: [
-            'private String user_name; // underscore not allowed',
-            'private int MAX_SIZE; // constant-style naming for non-constant'
+            'public int NUM1; // violation'
           ],
           correctUsage: [
-            'private String userName; // proper camelCase',
-            'private int maxSize; // proper camelCase for variable'
+            'public int num1;'
           ]
         },
         {
@@ -189,32 +382,41 @@ export default function CheckstyleReference() {
           whatItChecks: 'Local variable names should follow camelCase convention.',
           whyItMatters: 'Maintains consistency with Java naming conventions.',
           commonViolations: [
-            'String file_name = "test.txt"; // underscore',
-            'int Total_Count = 0; // mixed case with underscore'
+            'for (int VAR = 1; VAR < 10; VAR++) { } // violation'
           ],
           correctUsage: [
-            'String fileName = "test.txt"; // proper camelCase',
-            'int totalCount = 0; // proper camelCase'
+            'for (int var = 1; var < 10; var++) {}'
           ]
         },
         {
           name: 'StaticVariableName',
           whereUsed: 'Static Variables',
-          whatItChecks: 'Static variable names should follow camelCase (non-final) or UPPER_CASE (final).',
-          whyItMatters: 'Distinguishes between constants and static variables.',
+          whatItChecks: 'Static, non-final variable names should follow camelCase. Static final constants should be UPPER_SNAKE_CASE.',
+          whyItMatters: 'Distinguishes between mutable static state and immutable constants.',
           commonViolations: [
-            'static String default_value = "none"; // should be camelCase',
-            'static final String default_timeout = "30"; // should be UPPER_CASE'
+            'public static int ItStatic1 = 2; // violation, should be camelCase'
           ],
           correctUsage: [
-            'static String defaultValue = "none"; // camelCase for non-final',
-            'static final String DEFAULT_TIMEOUT = "30"; // UPPER_CASE for final'
+            'public static int goodStatic = 2;',
+            'public static final int GOOD_CONSTANT = 2;'
+          ]
+        },
+        {
+          name: 'LocalFinalVariableName',
+          whereUsed: 'Local Final Variables',
+          whatItChecks: 'Checks that local final variable names conform to a specified pattern (usually camelCase).',
+          whyItMatters: 'Ensures consistent naming for all local variables, final or not.',
+          commonViolations: [
+            'final int VAR1 = 5; // violation, should be camelCase'
+          ],
+          correctUsage: [
+            'final int var1 = 10;'
           ]
         },
         {
           name: 'UnusedLocalVariable',
           whereUsed: 'Method Body',
-          whatItChecks: 'Local variables that are declared but never used.',
+          whatItChecks: 'Finds local variables that are declared but never used.',
           whyItMatters: 'Removes dead code; improves readability; may indicate logic errors.',
           commonViolations: [
             'public void calculate() {',
@@ -226,6 +428,56 @@ export default function CheckstyleReference() {
             'public void calculate() {',
             '  // Remove unused variables',
             '  System.out.println("Done");',
+            '}'
+          ]
+        },
+        {
+          name: 'MultipleVariableDeclarations',
+          whereUsed: 'Variable Declarations',
+          whatItChecks: 'Checks that each variable is declared in its own statement.',
+          whyItMatters: 'Improves readability and makes it easier to add comments for each variable.',
+          commonViolations: [
+            'int lower, higher; // violation'
+          ],
+          correctUsage: [
+            'int lower;',
+            'int higher;'
+          ]
+        },
+        {
+          name: 'ExplicitInitialization',
+          whereUsed: 'Variable Initialization',
+          whatItChecks: 'Checks if variables are explicitly initialized to their type\'s default value (e.g., `int x = 0;`).',
+          whyItMatters: 'This is redundant as Java provides default initialization. Omitting it makes code cleaner.',
+          commonViolations: [
+            'private int intField1 = 0; // violation',
+            'private Obj objField1 = null; // violation'
+          ],
+          correctUsage: [
+            'private int intField3; // OK, relies on default init',
+            'private Obj objField3; // OK, relies on default init'
+          ]
+        },
+        {
+          name: 'VariableDeclarationUsageDistance',
+          whereUsed: 'Method Body',
+          whatItChecks: 'Checks the distance (in lines) between a variable\'s declaration and its first use.',
+          whyItMatters: 'Minimizing scope ("live time") makes code easier to understand and reduces the chance of bugs.',
+          commonViolations: [
+            'public void foo() {',
+            '  int num; // violation, distance is too great',
+            '  System.out.println("Statement 1");',
+            '  System.out.println("Statement 2");',
+            '  System.out.println("Statement 3");',
+            '  num = 1;',
+            '}'
+          ],
+          correctUsage: [
+            'public void foo() {',
+            '  System.out.println("Statement 1");',
+            '  System.out.println("Statement 2");',
+            '  System.out.println("Statement 3");',
+            '  int num = 1;',
             '}'
           ]
         }
@@ -243,68 +495,192 @@ export default function CheckstyleReference() {
         {
           name: 'ModifiedControlVariable',
           whereUsed: 'for Loops',
-          whatItChecks: 'Control variables in for loops should not be modified within the loop body.',
-          whyItMatters: 'Prevents confusing loop behavior; makes loop bounds predictable.',
+          whatItChecks: 'Control variables in `for` loops should not be modified within the loop body.',
+          whyItMatters: 'Prevents confusing loop behavior; makes loop bounds predictable and easy to understand.',
           commonViolations: [
             'for (int i = 0; i < 10; i++) {',
-            '  i += 2; // modifying control variable',
-            '  System.out.println(i);',
+            '  i++; // violation, modifying control variable',
             '}'
           ],
           correctUsage: [
-            'for (int i = 0; i < 10; i += 2) { // modify in update clause',
-            '  System.out.println(i);',
+            'for (int i = 0; i < 10; i += 2) { // OK, modify in update clause',
+            '  // ...',
             '}'
           ]
         },
         {
           name: 'MissingSwitchDefault',
           whereUsed: 'switch Statements',
-          whatItChecks: 'All switch statements should have a default clause.',
-          whyItMatters: 'Handles unexpected values; improves robustness; documents all cases considered.',
+          whatItChecks: 'All switch statements should have a `default` clause.',
+          whyItMatters: 'Handles unexpected values; improves robustness; documents that all cases have been considered.',
           commonViolations: [
             'switch (dayOfWeek) {',
             '  case 1: return "Monday";',
-            '  case 2: return "Tuesday";',
             '  // missing default clause',
             '}'
           ],
           correctUsage: [
             'switch (dayOfWeek) {',
             '  case 1: return "Monday";',
-            '  case 2: return "Tuesday";',
-            '  default: throw new IllegalArgumentException("Invalid day");',
+            '  default: throw new ...;',
             '}'
           ]
         },
         {
           name: 'SimplifyBooleanExpression',
           whereUsed: 'Boolean Expressions',
-          whatItChecks: 'Boolean expressions that can be simplified.',
+          whatItChecks: 'Finds boolean expressions that can be simplified.',
           whyItMatters: 'Improves readability; reduces complexity; eliminates redundancy.',
           commonViolations: [
             'if (condition == true) { ... } // redundant == true',
-            'return (x > 0) ? true : false; // redundant ternary'
+            'boolean m = s > 1 ? true : false; // redundant ternary'
           ],
           correctUsage: [
             'if (condition) { ... } // simplified',
-            'return x > 0; // direct boolean return'
+            'boolean m = s > 1;'
           ]
         },
         {
           name: 'SimplifyBooleanReturn',
           whereUsed: 'Return Statements',
-          whatItChecks: 'Boolean return statements that can be simplified.',
-          whyItMatters: 'Reduces code complexity; improves readability.',
+          whatItChecks: 'Finds `if-else` blocks that can be simplified to a single boolean return statement.',
+          whyItMatters: 'Reduces code complexity and line count; improves readability.',
           commonViolations: [
-            'if (x > 0) {',
+            'if (cond) {',
             '  return true;',
             '} else {',
             '  return false;',
             '}'
           ],
           correctUsage: [
-            'return x > 0; // simplified boolean return'
+            'return cond;'
+          ]
+        },
+        {
+          name: 'DefaultComesLast',
+          whereUsed: 'switch Statements',
+          whatItChecks: 'The `default` clause should be the last clause in switch statements.',
+          whyItMatters: 'Follows conventional ordering; improves readability and predictability.',
+          commonViolations: [
+            'switch (value) {',
+            '  default: handleDefault(); break;',
+            '  case 1: handleOne(); break; // violation',
+            '}'
+          ],
+          correctUsage: [
+            'switch (value) {',
+            '  case 1: handleOne(); break;',
+            '  default: handleDefault(); break;',
+            '}'
+          ]
+        },
+        {
+          name: 'NeedBraces',
+          whereUsed: 'Control Flow Statements',
+          whatItChecks: 'Ensures `if`, `else`, `for`, `while`, and `do-while` statements use curly braces `{}`.',
+          whyItMatters: 'Prevents common bugs like the "dangling else" problem and improves code clarity.',
+          commonViolations: [
+            'if (obj.equals(num)) return true; // violation'
+          ],
+          correctUsage: [
+            'if (obj.equals(num)) { return true; }'
+          ]
+        },
+        {
+          name: 'EmptyStatement',
+          whereUsed: 'Anywhere',
+          whatItChecks: 'Detects empty statements (a standalone semicolon `;`).',
+          whyItMatters: 'Empty statements are often typos (e.g., `if(..);`) that create hard-to-find bugs.',
+          commonViolations: [
+            'if(i > 3); // violation'
+          ],
+          correctUsage: [
+            'if(i > 3) { i++; }'
+          ]
+        },
+        {
+          name: 'EmptyBlock',
+          whereUsed: 'Any Block',
+          whatItChecks: 'Checks for empty blocks `{}`.',
+          whyItMatters: 'Empty blocks can indicate unfinished code or a logical error. If intentional, a comment should explain why.',
+          commonViolations: [
+            'if ( SomeTest ) { //violation',
+            '}'
+          ],
+          correctUsage: [
+            'if ( SomeTest ) {',
+            '  // do nothing, by design',
+            '}'
+          ]
+        },
+        {
+          name: 'AvoidInlineConditionals',
+          whereUsed: 'Ternary Operator',
+          whatItChecks: 'Detects inline conditional (ternary) operators.',
+          whyItMatters: 'Complex ternaries can be very hard to read. A standard `if-else` is often clearer.',
+          commonViolations: [
+            'b = (a != null && a.length() >= 1) ? a.substring(1) : null; // violation'
+          ],
+          correctUsage: [
+            'if (a != null && a.length() >= 1) {',
+            '  b = a.substring(1);',
+            '} else {',
+            '  b = null;',
+            '}'
+          ]
+        },
+        {
+          name: 'BooleanExpressionComplexity',
+          whereUsed: 'Boolean Expressions',
+          whatItChecks: 'Restricts the number of boolean operators (`&&`, `||`, `&`, `|`, `^`) in an expression.',
+          whyItMatters: 'Overly complex conditions are hard to read, debug, and maintain. They should be broken down.',
+          commonViolations: [
+            '// violation if max=3',
+            'boolean d = (a & b) | (b ^ a) | (a ^ b);'
+          ],
+          correctUsage: [
+            'boolean term1 = a & b;',
+            'boolean term2 = b ^ a;',
+            'boolean term3 = a ^ b;',
+            'boolean d = term1 | term2 | term3;'
+          ]
+        },
+        {
+          name: 'FallsThrough',
+          whereUsed: 'switch Statements',
+          whatItChecks: 'Checks for fall-through in `switch` statements where a case lacks a `break`, `return`, etc.',
+          whyItMatters: 'Accidental fall-through is a common source of bugs. Intentional fall-through must be documented.',
+          commonViolations: [
+            'case 1:',
+            '  i++;',
+            'case 2: // violation, fall through from case 1',
+            '  i++;',
+            '  break;'
+          ],
+          correctUsage: [
+            'case 1:',
+            '  i++;',
+            '  // fall through',
+            'case 2:',
+            '  i++;',
+            '  break;'
+          ]
+        },
+        {
+          name: 'NestedIfDepth',
+          whereUsed: 'if Statements',
+          whatItChecks: 'Restricts the depth of nested `if` statements.',
+          whyItMatters: 'Deeply nested logic is extremely difficult to follow and is a sign of high cyclomatic complexity. It should be refactored.',
+          commonViolations: [
+            'if (c1) {',
+            '  if (c2) {',
+            '    if (c3) { // violation if max=2',
+            '    }',
+            '  }',
+            '}'
+          ],
+          correctUsage: [
+            '// Refactor using helper methods or guard clauses'
           ]
         }
       ]
@@ -319,61 +695,47 @@ export default function CheckstyleReference() {
       icon: SparklesIcon,
       rules: [
         {
+          name: 'MissingOverride',
+          whereUsed: 'Method Declarations',
+          whatItChecks: 'Verifies that the `@Override` annotation is present when a method overrides a superclass method.',
+          whyItMatters: 'Prevents subtle bugs from typos in method signatures and clearly communicates intent.',
+          commonViolations: [
+            '/** {@inheritDoc} */',
+            'public void test2() { // violation, missing @Override',
+            '}'
+          ],
+          correctUsage: [
+            '/** {@inheritDoc} */',
+            '@Override',
+            'public void test1() { // OK',
+            '}'
+          ]
+        },
+        {
           name: 'CovariantEquals',
           whereUsed: 'equals() Methods',
-          whatItChecks: 'Classes that define equals(SomeType) should also override equals(Object).',
-          whyItMatters: 'Ensures proper equals contract; prevents subtle bugs with collections.',
+          whatItChecks: 'Classes that define a covariant `equals(SomeType)` should also override `equals(Object)`.',
+          whyItMatters: 'Ensures the `equals` contract is correctly implemented, preventing bugs when using collections (like HashMap, HashSet).',
           commonViolations: [
-            'public class Person {',
-            '  public boolean equals(Person other) { ... } // covariant only',
-            '  // missing equals(Object obj)',
+            'class Test {',
+            '  public boolean equals(Test i) { // violation',
+            '    return false;',
+            '  }',
             '}'
           ],
           correctUsage: [
-            'public class Person {',
+            'class Test {',
+            '  public boolean equals(Test i) { ... }',
             '  @Override',
-            '  public boolean equals(Object obj) { ... } // proper override',
+            '  public boolean equals(Object i) { ... }',
             '}'
-          ]
-        },
-        {
-          name: 'DefaultComesLast',
-          whereUsed: 'switch Statements',
-          whatItChecks: 'The default clause should be the last clause in switch statements.',
-          whyItMatters: 'Follows conventional ordering; improves readability.',
-          commonViolations: [
-            'switch (value) {',
-            '  default: handleDefault(); break;',
-            '  case 1: handleOne(); break; // default should be last',
-            '}'
-          ],
-          correctUsage: [
-            'switch (value) {',
-            '  case 1: handleOne(); break;',
-            '  case 2: handleTwo(); break;',
-            '  default: handleDefault(); break; // default last',
-            '}'
-          ]
-        },
-        {
-          name: 'StringLiteralEquality',
-          whereUsed: 'String Comparisons',
-          whatItChecks: 'String literals should not be compared using == or !=.',
-          whyItMatters: 'Prevents bugs from reference vs. value comparison.',
-          commonViolations: [
-            'if (str == "hello") { ... } // reference comparison',
-            'if (name != "admin") { ... } // reference comparison'
-          ],
-          correctUsage: [
-            'if ("hello".equals(str)) { ... } // value comparison',
-            'if (!"admin".equals(name)) { ... } // value comparison'
           ]
         },
         {
           name: 'EqualsHashCode',
           whereUsed: 'Class Definitions',
-          whatItChecks: 'Classes that override equals() must also override hashCode().',
-          whyItMatters: 'Maintains equals-hashCode contract; prevents bugs in hash-based collections.',
+          whatItChecks: 'Classes that override `equals()` must also override `hashCode()`.',
+          whyItMatters: 'Maintains the `equals-hashCode` contract, which is essential for the correct functioning of hash-based collections.',
           commonViolations: [
             'public class Person {',
             '  @Override',
@@ -386,7 +748,87 @@ export default function CheckstyleReference() {
             '  @Override',
             '  public boolean equals(Object obj) { ... }',
             '  @Override',
-            '  public int hashCode() { ... } // both overridden',
+            '  public int hashCode() { ... }',
+            '}'
+          ]
+        },
+        {
+          name: 'SuperClone',
+          whereUsed: 'clone() Method',
+          whatItChecks: 'Checks that an overriding `clone()` method invokes `super.clone()`.',
+          whyItMatters: 'Ensures the cloning process is correctly chained up the inheritance hierarchy.',
+          commonViolations: [
+            'public SuperCloneB clone() { // violation',
+            '  SuperCloneB other = new SuperCloneB();',
+            '  return other;',
+            '}'
+          ],
+          correctUsage: [
+            'public Object clone() throws CloneNotSupportedException {',
+            '  return super.clone();',
+            '}'
+          ]
+        },
+        {
+          name: 'SuperFinalize',
+          whereUsed: 'finalize() Method',
+          whatItChecks: 'Checks that an overriding `finalize()` method invokes `super.finalize()`.',
+          whyItMatters: 'Ensures that cleanup logic in all superclasses is executed correctly. (Note: `finalize` is deprecated and should be avoided).',
+          commonViolations: [
+            'protected void finalize() throws Throwable { // violation',
+            '  System.out.println("In finalize block");',
+            '}'
+          ],
+          correctUsage: [
+            'protected void finalize() throws Throwable {',
+            '  System.out.println("In finalize block");',
+            '  super.finalize(); // OK',
+            '}'
+          ]
+        }
+      ]
+    },
+    {
+      id: 'formatting-whitespace',
+      title: '6. Formatting & Whitespace',
+      description: 'These checks enforce consistent code layout and style.',
+      color: 'from-gray-500 to-slate-500',
+      bgColor: 'from-gray-50/80 to-slate-50/80',
+      textColor: 'text-gray-900',
+      icon: PaintBrushIcon,
+      rules: [
+        {
+          name: 'MethodParamPad',
+          whereUsed: 'Method/Constructor Calls & Definitions',
+          whatItChecks: 'Checks for whitespace padding around parentheses in method declarations and calls.',
+          whyItMatters: 'Enforces a consistent, conventional style for code formatting.',
+          commonViolations: [
+            'public Example1 (int aParam) { // violation, space before (',
+            '  super (); // violation, space before (',
+            '}'
+          ],
+          correctUsage: [
+            'public Example1(int aParam) {',
+            '  super();',
+            '}'
+          ]
+        },
+        {
+          name: 'EmptyLineSeparator',
+          whereUsed: 'Between Code Elements',
+          whatItChecks: 'Checks for empty lines between package, imports, fields, constructors, methods, etc.',
+          whyItMatters: 'Improves readability by visually grouping related code blocks.',
+          commonViolations: [
+            'class Example1 {',
+            '  int var1 = 1;',
+            '  int var2 = 2; // violation, needs empty line separator',
+            '}'
+          ],
+          correctUsage: [
+            'class Example1 {',
+            '  int var1 = 1;',
+            '',
+            '  int var2 = 2;',
             '}'
           ]
         }
@@ -433,7 +875,7 @@ export default function CheckstyleReference() {
               <div className="flex items-center space-x-4">
                 <Link
                   href="/"
-                  className="nav-link text-slate-600 hover:text-slate-800"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
                 >
                   <ArrowLeftIcon className="h-5 w-5 mr-2" />
                   Back to Hub
@@ -450,7 +892,7 @@ export default function CheckstyleReference() {
               </div>
               <div className="flex items-center space-x-2">
                 <div className="glass-card px-3 py-1 rounded-full">
-                  <span className="text-sm font-medium text-emerald-600">33+ Rules</span>
+                  <span className="text-sm font-medium text-emerald-600">{categories[0].count}+ Rules</span>
                 </div>
               </div>
             </div>
@@ -568,7 +1010,7 @@ export default function CheckstyleReference() {
                               </h4>
                               <div className="bg-red-50 border border-red-200 rounded-xl p-4">
                                 <pre className="text-sm text-red-800 whitespace-pre-wrap font-mono">
-                                  {rule.commonViolations.join('\n')}
+                                  {Array.isArray(rule.commonViolations) ? rule.commonViolations.join('\n') : rule.commonViolations}
                                 </pre>
                               </div>
                             </div>
@@ -580,7 +1022,7 @@ export default function CheckstyleReference() {
                               </h4>
                               <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
                                 <pre className="text-sm text-emerald-800 whitespace-pre-wrap font-mono">
-                                  {rule.correctUsage.join('\n')}
+                                  {Array.isArray(rule.correctUsage) ? rule.correctUsage.join('\n') : rule.correctUsage}
                                 </pre>
                               </div>
                             </div>
@@ -669,4 +1111,4 @@ export default function CheckstyleReference() {
       </footer>
     </div>
   );
-} 
+}

@@ -20,42 +20,29 @@ import {
 export default function QuickReference() {
   const essentialConcepts = [
     {
-      title: 'Abstract Data Types (ADTs)',
-      icon: BookOpenIcon,
-      color: 'from-blue-500 to-cyan-500',
-      bgColor: 'from-blue-50/80 to-cyan-50/80',
-      textColor: 'text-blue-900',
-      points: [
-        'Abstraction: Hide complex implementation details',
-        'Modularity: Independent, reusable components',
-        'Encapsulation: Internal details hidden from outside',
-        'User-defined types defined by their operations'
-      ]
-    },
-    {
-      title: 'Liskov Substitution Principle',
+      title: 'Liskov Substitution & Law of Demeter',
       icon: CodeBracketIcon,
       color: 'from-emerald-500 to-teal-500',
       bgColor: 'from-emerald-50/80 to-teal-50/80',
       textColor: 'text-emerald-900',
       points: [
-        'Subclass objects must be substitutable for superclass objects',
-        'Overridden methods accept same or less restrictive inputs',
-        'Maintains behavioral compatibility in inheritance',
-        'Critical for polymorphism to work correctly'
+        'LSP: Subclass objects must be substitutable for superclass objects without errors.',
+        'LSP Preconditions: Subclass preconditions must be weaker or equal to superclass\'s.',
+        'LSP Postconditions: Subclass postconditions must be stronger or equal to superclass\'s.',
+        'Law of Demeter: "Talk only to your immediate friends." Avoid long chains like `a.getB().getC().doSomething()`.'
       ]
     },
     {
-      title: 'Law of Demeter',
-      icon: BeakerIcon,
-      color: 'from-purple-500 to-violet-500',
-      bgColor: 'from-purple-50/80 to-violet-50/80',
-      textColor: 'text-purple-900',
+      title: 'Cohesion & Coupling',
+      icon: BookOpenIcon,
+      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'from-blue-50/80 to-cyan-50/80',
+      textColor: 'text-blue-900',
       points: [
-        'Objects should only talk to immediate friends',
-        'Call methods on: this, parameters, created objects, direct components',
-        'Avoid: a.getB().getC().doSomething()',
-        'Better: a.doSomethingWithC() - encapsulate the chain'
+        'Aim for HIGH Cohesion, LOW Coupling.',
+        'Functional Cohesion (Best): Routine performs one and only one operation.',
+        'Low Coupling: A class should have minimal dependencies on other classes (low fan-out).',
+        'Avoid star imports to keep coupling explicit.'
       ]
     },
     {
@@ -65,10 +52,23 @@ export default function QuickReference() {
       bgColor: 'from-orange-50/80 to-amber-50/80',
       textColor: 'text-orange-900',
       points: [
-        'Barricade: Separate dirty (external) from clean (internal) data',
-        'Assertions: For development-time error detection',
-        'Exceptions: For runtime errors that can be handled',
-        'Public methods validate, private methods assume clean data'
+        'Barricade: Public methods validate/sanitize "dirty" external data. Private methods can assume "clean" data.',
+        'Assertions: For development-time checks of things that should NEVER happen. They are disabled in production.',
+        'Exceptions: For runtime errors that might occur and can be handled (e.g., file not found).',
+        'Do not use assertions for executable code or user input validation.'
+      ]
+    },
+    {
+      title: 'Variable & Loop Control',
+      icon: BeakerIcon,
+      color: 'from-purple-500 to-violet-500',
+      bgColor: 'from-purple-50/80 to-violet-50/80',
+      textColor: 'text-purple-900',
+      points: [
+        'Minimize Scope: Declare variables as close to their first use as possible to reduce "live time".',
+        'One Purpose: Each variable should have exactly one purpose.',
+        'Loop Control: Do not modify a `for` loop\'s control variable inside the loop body.',
+        'Loop Exits: Use `break` for early exits; avoid complex boolean flags. Use `continue` at the top of a loop.'
       ]
     }
   ];
@@ -78,49 +78,50 @@ export default function QuickReference() {
       category: 'Class-Level',
       color: 'bg-blue-500',
       rules: [
-        'VisibilityModifier: Fields should be private',
-        'FinalClass: Utility classes should be final',
-        'HideUtilityClassConstructor: Private constructor for utility classes'
+        'VisibilityModifier: Fields must be private.',
+        'FinalClass: Utility classes must be final.',
+        'HideUtilityClassConstructor: Private constructor for utility classes.',
+        'DesignForExtension: Overridable methods must be abstract or empty hooks.'
       ]
     },
     {
       category: 'Method-Level',
       color: 'bg-emerald-500',
       rules: [
-        'MissingOverride: Use @Override annotation',
-        'MethodName: camelCase naming convention',
-        'MethodLength: Keep methods under 150 lines',
-        'FinalParameters: Declare parameters as final'
+        'MethodName: Use camelCase.',
+        'MethodLength: Keep methods short.',
+        'FinalParameters: Parameters must be final.',
+        'ParameterNumber: Avoid too many parameters.'
       ]
     },
     {
       category: 'Variable-Level',
       color: 'bg-purple-500',
       rules: [
-        'MemberName: Instance variables in camelCase',
-        'LocalVariableName: Local variables in camelCase',
-        'StaticVariableName: Static vars camelCase, constants UPPER_CASE',
-        'UnusedLocalVariable: Remove unused variables'
+        'MemberName/LocalVariableName: Use camelCase.',
+        'StaticVariableName: camelCase for vars, UPPER_CASE for constants.',
+        'UnusedLocalVariable: Remove unused variables.',
+        'VariableDeclarationUsageDistance: Declare variables close to use.'
       ]
     },
     {
       category: 'Control-Flow',
       color: 'bg-orange-500',
       rules: [
-        'ModifiedControlVariable: Don\'t modify for loop control vars',
-        'MissingSwitchDefault: Always include default in switch',
-        'SimplifyBooleanExpression: Avoid redundant == true',
-        'SimplifyBooleanReturn: Return boolean directly'
+        'ModifiedControlVariable: Don\'t modify `for` loop control vars.',
+        'MissingSwitchDefault: Always include `default` in `switch`.',
+        'SimplifyBooleanExpression: Avoid `if (cond == true)`.',
+        'FallsThrough: Comment intentional fall-throughs.'
       ]
     },
     {
       category: 'Java-Specific',
       color: 'bg-rose-500',
       rules: [
-        'CovariantEquals: Override equals(Object), not just equals(MyType)',
-        'DefaultComesLast: Put default clause last in switch',
-        'StringLiteralEquality: Use .equals(), not ==',
-        'EqualsHashCode: Override both equals() and hashCode()'
+        'CovariantEquals: Override `equals(Object)`, not just `equals(MyType)`.',
+        'EqualsHashCode: Override both `equals()` and `hashCode()`.',
+        'MissingOverride: Use `@Override` annotation.',
+        'SuperClone/SuperFinalize: Always call `super` method.'
       ]
     }
   ];
@@ -130,31 +131,31 @@ export default function QuickReference() {
       type: 'Direct Access',
       icon: RocketLaunchIcon,
       color: 'from-blue-500 to-blue-600',
-      description: 'Use input value directly as array index',
-      example: 'charTypeTable[97] for character \'a\'',
+      description: 'Use input value directly as array index.',
+      example: 'days = daysPerMonth[month-1]',
       advantages: ['Very fast lookup (O(1))', 'Simple implementation'],
       disadvantages: ['Can waste memory if sparse', 'Requires contiguous input range'],
-      bestFor: 'Small, contiguous input ranges'
+      bestFor: 'Small, contiguous input ranges (e.g., months in a year).'
     },
     {
       type: 'Indexed Access',
       icon: BeakerIcon,
       color: 'from-emerald-500 to-emerald-600',
-      description: 'Map input to index, then use index for lookup',
-      example: 'charTypeTable[charToIndexMap[inputChar]]',
+      description: 'Use an intermediate index array to map a sparse input to a dense data table.',
+      example: 'rate = rateTable[index[sparseInput]]',
       advantages: ['Memory efficient for sparse ranges', 'Handles non-contiguous inputs'],
-      disadvantages: ['Extra lookup step', 'More complex implementation'],
-      bestFor: 'Large or sparse input ranges'
+      disadvantages: ['Extra lookup step', 'More complex to set up'],
+      bestFor: 'Large or sparse input ranges where direct access is too memory-intensive.'
     },
     {
       type: 'Stair-Step Access',
       icon: CpuChipIcon,
       color: 'from-purple-500 to-purple-600',
-      description: 'Table entries valid for ranges of data',
-      example: 'Grade ranges: >=90% A, >=75% B, etc.',
+      description: 'Table entries are valid for ranges of data. Find the correct "step".',
+      example: 'Grading: score < 50 -> F, score < 65 -> D, etc.',
       advantages: ['Handles continuous ranges well', 'Natural for range-based logic'],
-      disadvantages: ['Sequential search (O(N))', 'Slower than direct access'],
-      bestFor: 'Range-based or continuous input values'
+      disadvantages: ['Sequential search (O(N)) can be slow; consider binary search', 'Endpoint logic can be tricky'],
+      bestFor: 'Range-based or continuous input values like grading or tax brackets.'
     }
   ];
 
@@ -164,10 +165,10 @@ export default function QuickReference() {
       icon: LightBulbIcon,
       color: 'text-yellow-600',
       tips: [
-        'Focus on WHY each rule exists, not just what it checks',
-        'Understand the principles behind good software design',
-        'Connect rules to real-world maintenance problems',
-        'Practice explaining concepts in your own words'
+        'Focus on WHY each rule exists, not just what it checks.',
+        'Understand the principles behind good software design (e.g., encapsulation, cohesion).',
+        'Connect rules to real-world maintenance problems.',
+        'Practice explaining concepts in your own words.'
       ]
     },
     {
@@ -175,10 +176,10 @@ export default function QuickReference() {
       icon: CodeBracketIcon,
       color: 'text-indigo-600',
       tips: [
-        'Practice identifying rule violations in code samples',
-        'Know common violation patterns for each rule',
-        'Understand correct usage examples',
-        'Be able to fix violations, not just identify them'
+        'Practice identifying rule violations in code samples.',
+        'Know common violation patterns for each key rule.',
+        'Understand correct usage examples and be able to fix violations.',
+        'Think about how to refactor bad code, not just identify it.'
       ]
     },
     {
@@ -186,10 +187,10 @@ export default function QuickReference() {
       icon: RocketLaunchIcon,
       color: 'text-emerald-600',
       tips: [
-        'Start with concepts you know well to build confidence',
-        'Don\'t spend too long on any single question',
-        'Review your answers if time permits',
-        'Use process of elimination for multiple choice'
+        'Start with concepts you know well to build confidence.',
+        'Don\'t spend too long on any single question.',
+        'Review your answers if time permits.',
+        'Use process of elimination for multiple-choice questions.'
       ]
     }
   ];
@@ -200,10 +201,10 @@ export default function QuickReference() {
       icon: ExclamationTriangleIcon,
       color: 'text-red-600',
       mistakes: [
-        'Confusing when to use @Override vs when not to',
-        'Mixing up camelCase vs UPPER_CASE naming conventions',
-        'Forgetting that utility classes need private constructors',
-        'Not understanding the difference between assertions and exceptions'
+        'Confusing `FinalParameters` (for parameters) with `FinalLocalVariable` (for local vars).',
+        'Mixing up camelCase vs. UPPER_CASE naming conventions for static variables.',
+        'Forgetting that utility classes need a private constructor (`HideUtilityClassConstructor`).',
+        'Not commenting intentional `switch` fall-throughs (`FallsThrough`).'
       ]
     },
     {
@@ -211,10 +212,10 @@ export default function QuickReference() {
       icon: BeakerIcon,
       color: 'text-orange-600',
       mistakes: [
-        'Confusing LSP with simple inheritance',
-        'Not understanding when Law of Demeter applies',
-        'Mixing up cohesion types (functional vs temporal)',
-        'Forgetting the "why" behind defensive programming'
+        'Confusing LSP with simple inheritance (LSP is about behavior).',
+        'Not recognizing a Law of Demeter violation (long method chains).',
+        'Mixing up cohesion types (e.g., functional vs. temporal).',
+        'Misunderstanding the difference between Assertions (for bugs) and Exceptions (for runtime errors).'
       ]
     },
     {
@@ -222,10 +223,10 @@ export default function QuickReference() {
       icon: CpuChipIcon,
       color: 'text-purple-600',
       mistakes: [
-        'Modifying loop control variables inside the loop body',
-        'Using == for string comparison instead of .equals()',
-        'Forgetting default clauses in switch statements',
-        'Not understanding table-driven method trade-offs'
+        'Modifying loop control variables inside the loop body (`ModifiedControlVariable`).',
+        'Using `==` for string comparison instead of `.equals()`.',
+        'Forgetting `default` clauses in `switch` statements (`MissingSwitchDefault`).',
+        'Not understanding table-driven method trade-offs (speed vs. memory).'
       ]
     }
   ];
@@ -241,7 +242,7 @@ export default function QuickReference() {
               <div className="flex items-center space-x-4">
                 <Link
                   href="/"
-                  className="nav-link text-slate-600 hover:text-slate-800"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center"
                 >
                   <ArrowLeftIcon className="h-5 w-5 mr-2" />
                   Back to Hub
@@ -483,4 +484,4 @@ export default function QuickReference() {
       </footer>
     </div>
   );
-} 
+}
