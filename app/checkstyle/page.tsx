@@ -887,6 +887,13 @@ export default function CheckstyleReference() {
                   <BeakerIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                   Take Quiz
                 </Link>
+                <Link
+                  href="/checkstyle-reverse-quiz"
+                  className="nav-link text-slate-600 hover:text-slate-800 flex items-center text-sm sm:text-base"
+                >
+                  <SparklesIcon className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                  Reverse Quiz
+                </Link>
               </div>
               <div className="flex items-center space-x-3 sm:space-x-4 order-1 sm:order-2">
                 <div className="floating-element">
